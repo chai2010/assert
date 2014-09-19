@@ -5,7 +5,9 @@
 package assert_test
 
 import (
+	"image"
 	"math"
+	"strings"
 	"testing"
 
 	. "github.com/chai2010/assert.go"
@@ -13,6 +15,7 @@ import (
 
 func TestAssert(t *testing.T) {
 	Assert(t, 1 == 1)
+	Assert(t, 1 == 1, "message1", "message2")
 }
 
 func TestAssertTrue(t *testing.T) {
@@ -25,10 +28,15 @@ func TestAssertFalse(t *testing.T) {
 
 func TestAssertEqual(t *testing.T) {
 	AssertEqual(t, 2, 1+1)
+	AssertEqual(t, "abc", strings.ToLower("ABC"))
+	AssertEqual(t, image.Pt(1, 2), image.Pt(1, 2))
 }
 
 func TestAssertNotEqual(t *testing.T) {
 	AssertNotEqual(t, 2, 1)
+	AssertNotEqual(t, "ABC", strings.ToLower("ABC"))
+	AssertNotEqual(t, image.Pt(1, 2), image.Pt(2, 2))
+	AssertNotEqual(t, image.Pt(1, 2), image.Rect(1, 2, 3, 4))
 }
 
 func TestAssertNear(t *testing.T) {
@@ -48,14 +56,18 @@ func TestAssertNotBetween(t *testing.T) {
 
 func TestAssertMatch(t *testing.T) {
 	AssertMatch(t, `^\w+@\w+\.com$`, "chaishushan@gmail.com")
+	AssertMatch(t, `^assert`, "assert.go")
+	AssertMatch(t, `\.go$`, "assert.go")
 }
 
 func TestAssertSliceContain(t *testing.T) {
 	AssertSliceContain(t, []int{1, 1, 2, 3, 5, 8, 13}, 8)
+	AssertSliceContain(t, []interface{}{1, 1, 2, 3, 5, "8", 13}, "8")
 }
 
 func TestAssertSliceNotContain(t *testing.T) {
 	AssertSliceNotContain(t, []int{1, 1, 2, 3, 5, 8, 13}, 12)
+	AssertSliceNotContain(t, []interface{}{1, 1, 2, 3, 5, "8", 13}, 8)
 }
 
 func TestAssertMapContain(t *testing.T) {
@@ -69,7 +81,6 @@ func TestAssertMapContain(t *testing.T) {
 		},
 		"MST", -7*60*60,
 	)
-
 }
 
 func TestAssertMapNotContain(t *testing.T) {
