@@ -222,7 +222,7 @@ func AssertNotBetween(t testing.TB, min, max, val float64, args ...interface{}) 
 	}
 }
 
-func AssertMatch(t *testing.T, expectedPattern, got string, args ...interface{}) {
+func AssertMatch(t testing.TB, expectedPattern, got string, args ...interface{}) {
 	if matched, err := regexp.MatchString(expectedPattern, got); err != nil || !matched {
 		if err != nil {
 			if msg := fmt.Sprint(args...); msg != "" {
@@ -240,7 +240,7 @@ func AssertMatch(t *testing.T, expectedPattern, got string, args ...interface{})
 	}
 }
 
-func AssertSliceContain(t *testing.T, slice, elem interface{}, args ...interface{}) {
+func AssertSliceContain(t testing.TB, slice, elem interface{}, args ...interface{}) {
 	sliceVal := reflect.ValueOf(slice)
 	if sliceVal.Kind() != reflect.Slice {
 		panic(fmt.Sprintf("AssertSliceContain called with non-slice value of type %T", slice))
@@ -261,7 +261,7 @@ func AssertSliceContain(t *testing.T, slice, elem interface{}, args ...interface
 	}
 }
 
-func AssertSliceNotContain(t *testing.T, slice, elem interface{}, args ...interface{}) {
+func AssertSliceNotContain(t testing.TB, slice, elem interface{}, args ...interface{}) {
 	sliceVal := reflect.ValueOf(slice)
 	if sliceVal.Kind() != reflect.Slice {
 		panic(fmt.Sprintf("AssertSliceNotContain called with non-slice value of type %T", slice))
@@ -282,7 +282,7 @@ func AssertSliceNotContain(t *testing.T, slice, elem interface{}, args ...interf
 	}
 }
 
-func AssertMapContain(t *testing.T, m, key, elem interface{}, args ...interface{}) {
+func AssertMapContain(t testing.TB, m, key, elem interface{}, args ...interface{}) {
 	mapVal := reflect.ValueOf(m)
 	if mapVal.Kind() != reflect.Map {
 		panic(fmt.Sprintf("AssertMapContain called with non-map value of type %T", m))
@@ -297,7 +297,7 @@ func AssertMapContain(t *testing.T, m, key, elem interface{}, args ...interface{
 	}
 }
 
-func AssertMapNotContain(t *testing.T, m, key, elem interface{}, args ...interface{}) {
+func AssertMapNotContain(t testing.TB, m, key, elem interface{}, args ...interface{}) {
 	mapVal := reflect.ValueOf(m)
 	if mapVal.Kind() != reflect.Map {
 		panic(fmt.Sprintf("AssertMapNotContain called with non-map value of type %T", m))
@@ -312,7 +312,7 @@ func AssertMapNotContain(t *testing.T, m, key, elem interface{}, args ...interfa
 	}
 }
 
-func AssertZero(t *testing.T, val interface{}, args ...interface{}) {
+func AssertZero(t testing.TB, val interface{}, args ...interface{}) {
 	if !reflect.DeepEqual(reflect.Zero(reflect.TypeOf(val)).Interface(), val) {
 		if msg := fmt.Sprint(args...); msg != "" {
 			t.Fatalf("AssertZero failed, val = %v, %s", val, msg)
@@ -322,7 +322,7 @@ func AssertZero(t *testing.T, val interface{}, args ...interface{}) {
 	}
 }
 
-func AssertNotZero(t *testing.T, val interface{}, args ...interface{}) {
+func AssertNotZero(t testing.TB, val interface{}, args ...interface{}) {
 	if reflect.DeepEqual(reflect.Zero(reflect.TypeOf(val)).Interface(), val) {
 		if msg := fmt.Sprint(args...); msg != "" {
 			t.Fatalf("AssertNotZero failed, val = %v, %s", val, msg)
@@ -332,7 +332,7 @@ func AssertNotZero(t *testing.T, val interface{}, args ...interface{}) {
 	}
 }
 
-func AssertFileExists(t *testing.T, path string, args ...interface{}) {
+func AssertFileExists(t testing.TB, path string, args ...interface{}) {
 	if _, err := os.Stat(path); err != nil {
 		if msg := fmt.Sprint(args...); msg != "" {
 			t.Fatalf("AssertFileExists failed, path = %v, err = %v, %s", path, err, msg)
@@ -342,7 +342,7 @@ func AssertFileExists(t *testing.T, path string, args ...interface{}) {
 	}
 }
 
-func AssertFileNotExists(t *testing.T, path string, args ...interface{}) {
+func AssertFileNotExists(t testing.TB, path string, args ...interface{}) {
 	if _, err := os.Stat(path); !os.IsNotExist(err) {
 		if msg := fmt.Sprint(args...); msg != "" {
 			t.Fatalf("AssertFileNotExists failed, path = %v, err = %v, %s", path, err, msg)
