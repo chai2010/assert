@@ -21,6 +21,7 @@ Example
 package assert_test
 
 import (
+	"bytes"
 	"image"
 	"math"
 	"strings"
@@ -45,12 +46,14 @@ func TestAssertFalse(t *testing.T) {
 func TestAssertEqual(t *testing.T) {
 	AssertEqual(t, 2, 1+1)
 	AssertEqual(t, "abc", strings.ToLower("ABC"))
+	AssertEqual(t, []byte("abc"), bytes.ToLower([]byte("ABC")))
 	AssertEqual(t, image.Pt(1, 2), image.Pt(1, 2))
 }
 
 func TestAssertNotEqual(t *testing.T) {
 	AssertNotEqual(t, 2, 1)
 	AssertNotEqual(t, "ABC", strings.ToLower("ABC"))
+	AssertNotEqual(t, []byte("ABC"), bytes.ToLower([]byte("ABC")))
 	AssertNotEqual(t, image.Pt(1, 2), image.Pt(2, 2))
 	AssertNotEqual(t, image.Pt(1, 2), image.Rect(1, 2, 3, 4))
 }
@@ -71,9 +74,15 @@ func TestAssertNotBetween(t *testing.T) {
 }
 
 func TestAssertMatch(t *testing.T) {
-	AssertMatch(t, `^\w+@\w+\.com$`, "chaishushan@gmail.com")
-	AssertMatch(t, `^assert`, "assert.go")
-	AssertMatch(t, `\.go$`, "assert.go")
+	AssertMatch(t, `^\w+@\w+\.com$`, []byte("chaishushan@gmail.com"))
+	AssertMatch(t, `^assert`, []byte("assert.go"))
+	AssertMatch(t, `\.go$`, []byte("assert.go"))
+}
+
+func TestAssertMatchString(t *testing.T) {
+	AssertMatchString(t, `^\w+@\w+\.com$`, "chaishushan@gmail.com")
+	AssertMatchString(t, `^assert`, "assert.go")
+	AssertMatchString(t, `\.go$`, "assert.go")
 }
 
 func TestAssertSliceContain(t *testing.T) {
