@@ -253,7 +253,7 @@ func AssertSliceContain(t *testing.T, slice, elem interface{}, args ...interface
 func AssertSliceNotContain(t *testing.T, slice, elem interface{}, args ...interface{}) {
 	sliceVal := reflect.ValueOf(slice)
 	if sliceVal.Kind() != reflect.Slice {
-		panic(fmt.Sprintf("AssertSliceContain called with non-slice value of type %T", slice))
+		panic(fmt.Sprintf("AssertSliceNotContain called with non-slice value of type %T", slice))
 	}
 	var contained bool
 	for i := 0; i < sliceVal.Len(); i++ {
@@ -289,14 +289,14 @@ func AssertMapContain(t *testing.T, m, key, elem interface{}, args ...interface{
 func AssertMapNotContain(t *testing.T, m, key, elem interface{}, args ...interface{}) {
 	mapVal := reflect.ValueOf(m)
 	if mapVal.Kind() != reflect.Map {
-		panic(fmt.Sprintf("AssertMapContain called with non-map value of type %T", m))
+		panic(fmt.Sprintf("AssertMapNotContain called with non-map value of type %T", m))
 	}
 	elemVal := mapVal.MapIndex(reflect.ValueOf(key))
 	if elemVal.IsValid() && reflect.DeepEqual(elemVal.Interface(), elem) {
 		if msg := fmt.Sprint(args...); msg != "" {
-			t.Fatalf("AssertMapContain failed, map = %v, key = %v, elem = %v, %s", m, key, elem, msg)
+			t.Fatalf("AssertMapNotContain failed, map = %v, key = %v, elem = %v, %s", m, key, elem, msg)
 		} else {
-			t.Fatalf("AssertMapContain failed, map = %v, key = %v, elem = %v", m, key, elem)
+			t.Fatalf("AssertMapNotContain failed, map = %v, key = %v, elem = %v", m, key, elem)
 		}
 	}
 }
