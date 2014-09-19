@@ -45,7 +45,7 @@ Example:
 	}
 
 	func TestAssertNear(t *testing.T) {
-		AssertNear(t, math.Sqrt(2), 1.414, 0.1)
+		AssertNear(t, 1.414, math.Sqrt(2), 0.1)
 	}
 
 	func TestAssertBetween(t *testing.T) {
