@@ -7,8 +7,9 @@ PkgDoc: [http://godoc.org/github.com/chai2010/assert.go](http://godoc.org/github
 Install
 =======
 
-1. `go get github.com/chai2010/assert.go`
-2. `go test`
+1. `go get -d github.com/chai2010/assert.go`
+2. `cd github.com/chai2010/assert.go && go install`
+3. `go test`
 
 Example
 =======
