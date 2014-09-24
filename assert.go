@@ -97,6 +97,32 @@ Example:
 		)
 	}
 
+	func TestAssertMapContainKey(t *testing.T) {
+		AssertMapContainKey(t,
+			map[string]int{
+				"UTC": 0 * 60 * 60,
+				"EST": -5 * 60 * 60,
+				"CST": -6 * 60 * 60,
+				"MST": -7 * 60 * 60,
+				"PST": -8 * 60 * 60,
+			},
+			"MST",
+		)
+	}
+
+	func TestAssertMapContainVal(t *testing.T) {
+		AssertMapContainVal(t,
+			map[string]int{
+				"UTC": 0 * 60 * 60,
+				"EST": -5 * 60 * 60,
+				"CST": -6 * 60 * 60,
+				"MST": -7 * 60 * 60,
+				"PST": -8 * 60 * 60,
+			},
+			-7*60*60,
+		)
+	}
+
 	func TestAssertMapNotContain(t *testing.T) {
 		AssertMapNotContain(t,
 			map[string]int{
@@ -107,6 +133,32 @@ Example:
 				"PST": -8 * 60 * 60,
 			},
 			"ABC", -7*60*60,
+		)
+	}
+
+	func TestAssertMapNotContainKey(t *testing.T) {
+		AssertMapNotContainKey(t,
+			map[string]int{
+				"UTC": 0 * 60 * 60,
+				"EST": -5 * 60 * 60,
+				"CST": -6 * 60 * 60,
+				"MST": -7 * 60 * 60,
+				"PST": -8 * 60 * 60,
+			},
+			"ABC",
+		)
+	}
+
+	func TestAssertMapNotContainVal(t *testing.T) {
+		AssertMapNotContainVal(t,
+			map[string]int{
+				"UTC": 0 * 60 * 60,
+				"EST": -5 * 60 * 60,
+				"CST": -6 * 60 * 60,
+				"MST": -7 * 60 * 60,
+				"PST": -8 * 60 * 60,
+			},
+			1984,
 		)
 	}
 
@@ -295,14 +347,14 @@ func AssertMatchString(t testing.TB, expectedPattern, got string, args ...interf
 	}
 }
 
-func AssertSliceContain(t testing.TB, slice, elem interface{}, args ...interface{}) {
+func AssertSliceContain(t testing.TB, slice, val interface{}, args ...interface{}) {
 	sliceVal := reflect.ValueOf(slice)
 	if sliceVal.Kind() != reflect.Slice {
 		panic(fmt.Sprintf("AssertSliceContain called with non-slice value of type %T", slice))
 	}
 	var contained bool
 	for i := 0; i < sliceVal.Len(); i++ {
-		if reflect.DeepEqual(sliceVal.Index(i).Interface(), elem) {
+		if reflect.DeepEqual(sliceVal.Index(i).Interface(), val) {
 			contained = true
 			break
 		}
@@ -310,21 +362,21 @@ func AssertSliceContain(t testing.TB, slice, elem interface{}, args ...interface
 	if !contained {
 		file, line := callerFileLine()
 		if msg := fmt.Sprint(args...); msg != "" {
-			t.Fatalf("%s:%d: AssertSliceContain failed, slice = %v, elem = %v, %s", file, line, slice, elem, msg)
+			t.Fatalf("%s:%d: AssertSliceContain failed, slice = %v, val = %v, %s", file, line, slice, val, msg)
 		} else {
-			t.Fatalf("%s:%d: AssertSliceContain failed, slice = %v, elem = %v", file, line, slice, elem)
+			t.Fatalf("%s:%d: AssertSliceContain failed, slice = %v, val = %v", file, line, slice, val)
 		}
 	}
 }
 
-func AssertSliceNotContain(t testing.TB, slice, elem interface{}, args ...interface{}) {
+func AssertSliceNotContain(t testing.TB, slice, val interface{}, args ...interface{}) {
 	sliceVal := reflect.ValueOf(slice)
 	if sliceVal.Kind() != reflect.Slice {
 		panic(fmt.Sprintf("AssertSliceNotContain called with non-slice value of type %T", slice))
 	}
 	var contained bool
 	for i := 0; i < sliceVal.Len(); i++ {
-		if reflect.DeepEqual(sliceVal.Index(i).Interface(), elem) {
+		if reflect.DeepEqual(sliceVal.Index(i).Interface(), val) {
 			contained = true
 			break
 		}
@@ -332,41 +384,119 @@ func AssertSliceNotContain(t testing.TB, slice, elem interface{}, args ...interf
 	if contained {
 		file, line := callerFileLine()
 		if msg := fmt.Sprint(args...); msg != "" {
-			t.Fatalf("%s:%d: AssertSliceNotContain failed, slice = %v, elem = %v, %s", file, line, slice, elem, msg)
+			t.Fatalf("%s:%d: AssertSliceNotContain failed, slice = %v, val = %v, %s", file, line, slice, val, msg)
 		} else {
-			t.Fatalf("%s:%d: AssertSliceNotContain failed, slice = %v, elem = %v", file, line, slice, elem)
+			t.Fatalf("%s:%d: AssertSliceNotContain failed, slice = %v, val = %v", file, line, slice, val)
 		}
 	}
 }
 
-func AssertMapContain(t testing.TB, m, key, elem interface{}, args ...interface{}) {
+func AssertMapContain(t testing.TB, m, key, val interface{}, args ...interface{}) {
 	mapVal := reflect.ValueOf(m)
 	if mapVal.Kind() != reflect.Map {
 		panic(fmt.Sprintf("AssertMapContain called with non-map value of type %T", m))
 	}
 	elemVal := mapVal.MapIndex(reflect.ValueOf(key))
-	if !elemVal.IsValid() && !reflect.DeepEqual(elemVal.Interface(), elem) {
+	if !elemVal.IsValid() && !reflect.DeepEqual(elemVal.Interface(), val) {
 		file, line := callerFileLine()
 		if msg := fmt.Sprint(args...); msg != "" {
-			t.Fatalf("%s:%d: AssertMapContain failed, map = %v, key = %v, elem = %v, %s", file, line, m, key, elem, msg)
+			t.Fatalf("%s:%d: AssertMapContain failed, map = %v, key = %v, val = %v, %s", file, line, m, key, val, msg)
 		} else {
-			t.Fatalf("%s:%d: AssertMapContain failed, map = %v, key = %v, elem = %v", file, line, m, key, elem)
+			t.Fatalf("%s:%d: AssertMapContain failed, map = %v, key = %v, val = %v", file, line, m, key, val)
 		}
 	}
 }
 
-func AssertMapNotContain(t testing.TB, m, key, elem interface{}, args ...interface{}) {
+func AssertMapContainKey(t testing.TB, m, key interface{}, args ...interface{}) {
+	mapVal := reflect.ValueOf(m)
+	if mapVal.Kind() != reflect.Map {
+		panic(fmt.Sprintf("AssertMapContainKey called with non-map value of type %T", m))
+	}
+	elemVal := mapVal.MapIndex(reflect.ValueOf(key))
+	if !elemVal.IsValid() {
+		file, line := callerFileLine()
+		if msg := fmt.Sprint(args...); msg != "" {
+			t.Fatalf("%s:%d: AssertMapContainKey failed, map = %v, key = %v, %s", file, line, m, key, msg)
+		} else {
+			t.Fatalf("%s:%d: AssertMapContainKey failed, map = %v, key = %v", file, line, m, key)
+		}
+	}
+}
+
+func AssertMapContainVal(t testing.TB, m, val interface{}, args ...interface{}) {
+	mapVal := reflect.ValueOf(m)
+	if mapVal.Kind() != reflect.Map {
+		panic(fmt.Sprintf("AssertMapContainVal called with non-map value of type %T", m))
+	}
+	var contained bool
+	for _, key := range mapVal.MapKeys() {
+		elemVal := mapVal.MapIndex(key)
+		if elemVal.IsValid() && reflect.DeepEqual(elemVal.Interface(), val) {
+			contained = true
+			break
+		}
+	}
+	if !contained {
+		file, line := callerFileLine()
+		if msg := fmt.Sprint(args...); msg != "" {
+			t.Fatalf("%s:%d: AssertMapContainVal failed, map = %v, val = %v, %s", file, line, m, val, msg)
+		} else {
+			t.Fatalf("%s:%d: AssertMapContainVal failed, map = %v, val = %v", file, line, m, val)
+		}
+	}
+}
+
+func AssertMapNotContain(t testing.TB, m, key, val interface{}, args ...interface{}) {
 	mapVal := reflect.ValueOf(m)
 	if mapVal.Kind() != reflect.Map {
 		panic(fmt.Sprintf("AssertMapNotContain called with non-map value of type %T", m))
 	}
 	elemVal := mapVal.MapIndex(reflect.ValueOf(key))
-	if elemVal.IsValid() && reflect.DeepEqual(elemVal.Interface(), elem) {
+	if elemVal.IsValid() && reflect.DeepEqual(elemVal.Interface(), val) {
 		file, line := callerFileLine()
 		if msg := fmt.Sprint(args...); msg != "" {
-			t.Fatalf("%s:%d: AssertMapNotContain failed, map = %v, key = %v, elem = %v, %s", file, line, m, key, elem, msg)
+			t.Fatalf("%s:%d: AssertMapNotContain failed, map = %v, key = %v, val = %v, %s", file, line, m, key, val, msg)
 		} else {
-			t.Fatalf("%s:%d: AssertMapNotContain failed, map = %v, key = %v, elem = %v", file, line, m, key, elem)
+			t.Fatalf("%s:%d: AssertMapNotContain failed, map = %v, key = %v, val = %v", file, line, m, key, val)
+		}
+	}
+}
+
+func AssertMapNotContainKey(t testing.TB, m, key interface{}, args ...interface{}) {
+	mapVal := reflect.ValueOf(m)
+	if mapVal.Kind() != reflect.Map {
+		panic(fmt.Sprintf("AssertMapNotContainKey called with non-map value of type %T", m))
+	}
+	elemVal := mapVal.MapIndex(reflect.ValueOf(key))
+	if elemVal.IsValid() {
+		file, line := callerFileLine()
+		if msg := fmt.Sprint(args...); msg != "" {
+			t.Fatalf("%s:%d: AssertMapNotContainKey failed, map = %v, key = %v, %s", file, line, m, key, msg)
+		} else {
+			t.Fatalf("%s:%d: AssertMapNotContainKey failed, map = %v, key = %v", file, line, m, key)
+		}
+	}
+}
+
+func AssertMapNotContainVal(t testing.TB, m, val interface{}, args ...interface{}) {
+	mapVal := reflect.ValueOf(m)
+	if mapVal.Kind() != reflect.Map {
+		panic(fmt.Sprintf("AssertMapNotContainVal called with non-map value of type %T", m))
+	}
+	var contained bool
+	for _, key := range mapVal.MapKeys() {
+		elemVal := mapVal.MapIndex(key)
+		if elemVal.IsValid() && reflect.DeepEqual(elemVal.Interface(), val) {
+			contained = true
+			break
+		}
+	}
+	if contained {
+		file, line := callerFileLine()
+		if msg := fmt.Sprint(args...); msg != "" {
+			t.Fatalf("%s:%d: AssertMapNotContainVal failed, map = %v, val = %v, %s", file, line, m, val, msg)
+		} else {
+			t.Fatalf("%s:%d: AssertMapNotContainVal failed, map = %v, val = %v", file, line, m, val)
 		}
 	}
 }
