@@ -28,6 +28,14 @@ Example:
 		Assert(t, 1 == 1, "message1", "message2")
 	}
 
+	func TestAssertNil(t *testing.T) {
+		AssertNil(t, nil)
+	}
+
+	func TestAssertNotNil(t *testing.T) {
+		AssertNotNil(t, fmt.Errorf("error"))
+	}
+
 	func TestAssertTrue(t *testing.T) {
 		AssertTrue(t, true)
 	}
@@ -232,6 +240,28 @@ func Assert(t testing.TB, condition bool, args ...interface{}) {
 			t.Fatalf("%s:%d: Assert failed, %s", file, line, msg)
 		} else {
 			t.Fatalf("%s:%d: Assert failed", file, line)
+		}
+	}
+}
+
+func AssertNil(t testing.TB, p interface{}, args ...interface{}) {
+	if p != nil {
+		file, line := callerFileLine()
+		if msg := fmt.Sprint(args...); msg != "" {
+			t.Fatalf("%s:%d: AssertNil failed, %s", file, line, msg)
+		} else {
+			t.Fatalf("%s:%d: AssertNil failed", file, line)
+		}
+	}
+}
+
+func AssertNotNil(t testing.TB, p interface{}, args ...interface{}) {
+	if p == nil {
+		file, line := callerFileLine()
+		if msg := fmt.Sprint(args...); msg != "" {
+			t.Fatalf("%s:%d: AssertNotNil failed, %s", file, line, msg)
+		} else {
+			t.Fatalf("%s:%d: AssertNotNil failed", file, line)
 		}
 	}
 }

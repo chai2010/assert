@@ -8,6 +8,7 @@ package assert
 
 import (
 	"bytes"
+	"fmt"
 	"flag"
 	"image"
 	"math"
@@ -31,6 +32,20 @@ func TestAssert_failed_02(t *testing.T) {
 		t.SkipNow()
 	}
 	Assert(t, 1 == 2, "message1", "message2")
+}
+
+func TestAssertNil_failed(t *testing.T) {
+	if !*flagAssertFailedTest {
+		t.SkipNow()
+	}
+	AssertNil(t, fmt.Errorf("error"))
+}
+
+func TestAssertNotNil_failed(t *testing.T) {
+	if !*flagAssertFailedTest {
+		t.SkipNow()
+	}
+	AssertNotNil(t, nil)
 }
 
 func TestAssertTrue_failed(t *testing.T) {
