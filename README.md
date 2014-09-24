@@ -11,6 +11,8 @@ Install
 2. `cd github.com/chai2010/assert.go && go install`
 3. `go test`
 
+See failed test: `go test -assert.failed`
+
 Example
 =======
 

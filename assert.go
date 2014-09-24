@@ -5,6 +5,10 @@
 /*
 Package assert provides assert helper functions for testing package.
 
+See failed test:
+
+	go test -assert.failed
+
 Example:
 
 	package assert_test
@@ -397,7 +401,7 @@ func AssertMapContain(t testing.TB, m, key, val interface{}, args ...interface{}
 		panic(fmt.Sprintf("AssertMapContain called with non-map value of type %T", m))
 	}
 	elemVal := mapVal.MapIndex(reflect.ValueOf(key))
-	if !elemVal.IsValid() && !reflect.DeepEqual(elemVal.Interface(), val) {
+	if !elemVal.IsValid() || !reflect.DeepEqual(elemVal.Interface(), val) {
 		file, line := callerFileLine()
 		if msg := fmt.Sprint(args...); msg != "" {
 			t.Fatalf("%s:%d: AssertMapContain failed, map = %v, key = %v, val = %v, %s", file, line, m, key, val, msg)
@@ -527,9 +531,17 @@ func AssertFileExists(t testing.TB, path string, args ...interface{}) {
 	if _, err := os.Stat(path); err != nil {
 		file, line := callerFileLine()
 		if msg := fmt.Sprint(args...); msg != "" {
-			t.Fatalf("%s:%d: AssertFileExists failed, path = %v, err = %v, %s", file, line, path, err, msg)
+			if err != nil {
+				t.Fatalf("%s:%d: AssertFileExists failed, path = %v, err = %v, %s", file, line, path, err, msg)
+			} else {
+				t.Fatalf("%s:%d: AssertFileExists failed, path = %v, %s", file, line, path, msg)
+			}
 		} else {
-			t.Fatalf("%s:%d: AssertFileExists failed, path = %v, err = %v", file, line, path, err)
+			if err != nil {
+				t.Fatalf("%s:%d: AssertFileExists failed, path = %v, err = %v", file, line, path, err)
+			} else {
+				t.Fatalf("%s:%d: AssertFileExists failed, path = %v", file, line, path)
+			}
 		}
 	}
 }
@@ -538,9 +550,17 @@ func AssertFileNotExists(t testing.TB, path string, args ...interface{}) {
 	if _, err := os.Stat(path); !os.IsNotExist(err) {
 		file, line := callerFileLine()
 		if msg := fmt.Sprint(args...); msg != "" {
-			t.Fatalf("%s:%d: AssertFileNotExists failed, path = %v, err = %v, %s", file, line, path, err, msg)
+			if err != nil {
+				t.Fatalf("%s:%d: AssertFileNotExists failed, path = %v, err = %v, %s", file, line, path, err, msg)
+			} else {
+				t.Fatalf("%s:%d: AssertFileNotExists failed, path = %v, %s", file, line, path, msg)
+			}
 		} else {
-			t.Fatalf("%s:%d: AssertFileNotExists failed, path = %v, err = %v", file, line, path, err)
+			if err != nil {
+				t.Fatalf("%s:%d: AssertFileNotExists failed, path = %v, err = %v", file, line, path, err)
+			} else {
+				t.Fatalf("%s:%d: AssertFileNotExists failed, path = %v", file, line, path)
+			}
 		}
 	}
 }
