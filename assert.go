@@ -248,9 +248,17 @@ func AssertNil(t testing.TB, p interface{}, args ...interface{}) {
 	if p != nil {
 		file, line := callerFileLine()
 		if msg := fmt.Sprint(args...); msg != "" {
-			t.Fatalf("%s:%d: AssertNil failed, %s", file, line, msg)
+			if err, ok := p.(error); ok && err != nil {
+				t.Fatalf("%s:%d: AssertNil failed, err = %v, %s", file, line, err, msg)
+			} else {
+				t.Fatalf("%s:%d: AssertNil failed, %s", file, line, msg)
+			}
 		} else {
-			t.Fatalf("%s:%d: AssertNil failed", file, line)
+			if err, ok := p.(error); ok && err != nil {
+				t.Fatalf("%s:%d: AssertNil failed, err = %v", file, line, err)
+			} else {
+				t.Fatalf("%s:%d: AssertNil failed", file, line)
+			}
 		}
 	}
 }

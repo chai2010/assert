@@ -8,8 +8,8 @@ package assert
 
 import (
 	"bytes"
-	"fmt"
 	"flag"
+	"fmt"
 	"image"
 	"math"
 	"strings"
