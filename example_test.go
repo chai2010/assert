@@ -6,17 +6,26 @@ package assert_test
 
 import (
 	"bytes"
+	"fmt"
 	"image"
 	"math"
 	"strings"
 	"testing"
 
-	"github.com/chai2010/assert"
+	. "github.com/chai2010/assert"
 )
 
 func TestAssert(t *testing.T) {
 	Assert(t, 1 == 1)
 	Assert(t, 1 == 1, "message1", "message2")
+}
+
+func TestAssertNil(t *testing.T) {
+	AssertNil(t, nil)
+}
+
+func TestAssertNotNil(t *testing.T) {
+	AssertNotNil(t, fmt.Errorf("error"))
 }
 
 func TestAssertTrue(t *testing.T) {
@@ -92,6 +101,32 @@ func TestAssertMapContain(t *testing.T) {
 	)
 }
 
+func TestAssertMapContainKey(t *testing.T) {
+	AssertMapContainKey(t,
+		map[string]int{
+			"UTC": 0 * 60 * 60,
+			"EST": -5 * 60 * 60,
+			"CST": -6 * 60 * 60,
+			"MST": -7 * 60 * 60,
+			"PST": -8 * 60 * 60,
+		},
+		"MST",
+	)
+}
+
+func TestAssertMapContainVal(t *testing.T) {
+	AssertMapContainVal(t,
+		map[string]int{
+			"UTC": 0 * 60 * 60,
+			"EST": -5 * 60 * 60,
+			"CST": -6 * 60 * 60,
+			"MST": -7 * 60 * 60,
+			"PST": -8 * 60 * 60,
+		},
+		-7*60*60,
+	)
+}
+
 func TestAssertMapNotContain(t *testing.T) {
 	AssertMapNotContain(t,
 		map[string]int{
@@ -102,6 +137,32 @@ func TestAssertMapNotContain(t *testing.T) {
 			"PST": -8 * 60 * 60,
 		},
 		"ABC", -7*60*60,
+	)
+}
+
+func TestAssertMapNotContainKey(t *testing.T) {
+	AssertMapNotContainKey(t,
+		map[string]int{
+			"UTC": 0 * 60 * 60,
+			"EST": -5 * 60 * 60,
+			"CST": -6 * 60 * 60,
+			"MST": -7 * 60 * 60,
+			"PST": -8 * 60 * 60,
+		},
+		"ABC",
+	)
+}
+
+func TestAssertMapNotContainVal(t *testing.T) {
+	AssertMapNotContainVal(t,
+		map[string]int{
+			"UTC": 0 * 60 * 60,
+			"EST": -5 * 60 * 60,
+			"CST": -6 * 60 * 60,
+			"MST": -7 * 60 * 60,
+			"PST": -8 * 60 * 60,
+		},
+		1984,
 	)
 }
 
