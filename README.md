@@ -1,13 +1,13 @@
 Assert for Go testing
 =====================
 
-PkgDoc: [http://godoc.org/github.com/chai2010/assert.go](http://godoc.org/github.com/chai2010/assert.go)
+PkgDoc: [http://godoc.org/github.com/chai2010/assert](http://godoc.org/github.com/chai2010/assert)
 
 
 Install
 =======
 
-1. `go get github.com/chai2010/assert.go`
+1. `go install github.com/chai2010/assert`
 2. `go test`
 
 Example
@@ -27,7 +27,7 @@ import (
 	"strings"
 	"testing"
 
-	. "github.com/chai2010/assert.go"
+	"github.com/chai2010/assert"
 )
 
 func TestAssert(t *testing.T) {

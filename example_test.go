@@ -11,7 +11,7 @@ import (
 	"strings"
 	"testing"
 
-	. "github.com/chai2010/assert.go"
+	"github.com/chai2010/assert"
 )
 
 func TestAssert(t *testing.T) {
