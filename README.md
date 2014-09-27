@@ -27,7 +27,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/chai2010/assert"
+	. "github.com/chai2010/assert"
 )
 
 func TestAssert(t *testing.T) {
