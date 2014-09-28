@@ -22,6 +22,7 @@ package assert_test
 
 import (
 	"bytes"
+	"fmt"
 	"image"
 	"math"
 	"strings"
