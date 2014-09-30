@@ -200,6 +200,22 @@ Example:
 		AssertFileNotExists(t, "assert.cc")
 	}
 
+	func TestAssertImplements(t *testing.T) {
+		AssertImplements(t, (*error)(nil), fmt.Errorf("ErrorType"))
+	}
+
+	func TestAssertSameType(t *testing.T) {
+		AssertSameType(t, string("abc"), string("ABC"))
+	}
+
+	func TestAssertPanic(t *testing.T) {
+		AssertPanic(t, func() { panic("TestAssertPanic") })
+	}
+
+	func TestAssertNotPanic(t *testing.T) {
+		AssertNotPanic(t, func() {})
+	}
+
 Report bugs to <chaishushan@gmail.com>.
 
 Thanks!
@@ -599,6 +615,66 @@ func AssertFileNotExists(t testing.TB, path string, args ...interface{}) {
 			} else {
 				t.Fatalf("%s:%d: AssertFileNotExists failed, path = %v", file, line, path)
 			}
+		}
+	}
+}
+
+func AssertImplements(t testing.TB, interfaceObj, obj interface{}, args ...interface{}) {
+	if !reflect.TypeOf(obj).Implements(reflect.TypeOf(interfaceObj).Elem()) {
+		file, line := callerFileLine()
+		if msg := fmt.Sprint(args...); msg != "" {
+			t.Fatalf("%s:%d: AssertImplements failed, interface = %T, obj = %v, %s", file, line, interfaceObj, obj, msg)
+		} else {
+			t.Fatalf("%s:%d: AssertImplements failed, interface = %T, obj = %v", file, line, interfaceObj, obj)
+		}
+	}
+}
+
+func AssertSameType(t testing.TB, expectedType interface{}, obj interface{}, args ...interface{}) {
+	if !reflect.DeepEqual(reflect.TypeOf(obj), reflect.TypeOf(expectedType)) {
+		file, line := callerFileLine()
+		if msg := fmt.Sprint(args...); msg != "" {
+			t.Fatalf("%s:%d: AssertSameType failed, expected = %T, obj = %T, %s", file, line, expectedType, obj, msg)
+		} else {
+			t.Fatalf("%s:%d: AssertSameType failed, expected = %T, obj = %T", file, line, expectedType, obj)
+		}
+	}
+}
+
+func AssertPanic(t testing.TB, f func(), args ...interface{}) {
+	var panicVal interface{}
+	func() {
+		defer func() {
+			panicVal = recover()
+		}()
+		f()
+	}()
+
+	if panicVal == nil {
+		file, line := callerFileLine()
+		if msg := fmt.Sprint(args...); msg != "" {
+			t.Fatalf("%s:%d: AssertPanic failed, %s", file, line, msg)
+		} else {
+			t.Fatalf("%s:%d: AssertPanic failed", file, line)
+		}
+	}
+}
+
+func AssertNotPanic(t testing.TB, f func(), args ...interface{}) {
+	var panicVal interface{}
+	func() {
+		defer func() {
+			panicVal = recover()
+		}()
+		f()
+	}()
+
+	if panicVal != nil {
+		file, line := callerFileLine()
+		if msg := fmt.Sprint(args...); msg != "" {
+			t.Fatalf("%s:%d: AssertNotPanic failed, panic = %v, %s", file, line, panicVal, msg)
+		} else {
+			t.Fatalf("%s:%d: AssertNotPanic failed, panic = %v", file, line, panicVal)
 		}
 	}
 }

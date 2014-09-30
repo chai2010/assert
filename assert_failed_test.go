@@ -351,3 +351,31 @@ func TestAssertFileNotExists_failed(t *testing.T) {
 	}
 	AssertFileNotExists(t, "assert.go")
 }
+
+func TestAssertImplements_failed(t *testing.T) {
+	if !*flagAssertFailedTest {
+		t.SkipNow()
+	}
+	AssertImplements(t, (*error)(nil), "NotErrorType")
+}
+
+func TestAssertSameType_failed(t *testing.T) {
+	if !*flagAssertFailedTest {
+		t.SkipNow()
+	}
+	AssertSameType(t, string("abc"), []byte("ABC"))
+}
+
+func TestAssertPanic_failed(t *testing.T) {
+	if !*flagAssertFailedTest {
+		t.SkipNow()
+	}
+	AssertPanic(t, func() {})
+}
+
+func TestAssertNotPanic_failed(t *testing.T) {
+	if !*flagAssertFailedTest {
+		t.SkipNow()
+	}
+	AssertNotPanic(t, func() { panic("TestAssertNotPanic_failed") })
+}

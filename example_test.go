@@ -191,3 +191,19 @@ func TestAssertFileExists(t *testing.T) {
 func TestAssertFileNotExists(t *testing.T) {
 	AssertFileNotExists(t, "assert.cc")
 }
+
+func TestAssertImplements(t *testing.T) {
+	AssertImplements(t, (*error)(nil), fmt.Errorf("ErrorType"))
+}
+
+func TestAssertSameType(t *testing.T) {
+	AssertSameType(t, string("abc"), string("ABC"))
+}
+
+func TestAssertPanic(t *testing.T) {
+	AssertPanic(t, func() { panic("TestAssertPanic") })
+}
+
+func TestAssertNotPanic(t *testing.T) {
+	AssertNotPanic(t, func() {})
+}
