@@ -22,6 +22,7 @@ package assert_test
 
 import (
 	"bytes"
+	"fmt"
 	"image"
 	"math"
 	"strings"
@@ -33,6 +34,14 @@ import (
 func TestAssert(t *testing.T) {
 	Assert(t, 1 == 1)
 	Assert(t, 1 == 1, "message1", "message2")
+}
+
+func TestAssertNil(t *testing.T) {
+	AssertNil(t, nil)
+}
+
+func TestAssertNotNil(t *testing.T) {
+	AssertNotNil(t, fmt.Errorf("error"))
 }
 
 func TestAssertTrue(t *testing.T) {
