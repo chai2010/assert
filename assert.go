@@ -623,9 +623,9 @@ func AssertImplements(t testing.TB, interfaceObj, obj interface{}, args ...inter
 	if !reflect.TypeOf(obj).Implements(reflect.TypeOf(interfaceObj).Elem()) {
 		file, line := callerFileLine()
 		if msg := fmt.Sprint(args...); msg != "" {
-			t.Fatalf("%s:%d: AssertImplements failed, interface = %T, obj = %v, %s", file, line, interfaceObj, obj, msg)
+			t.Fatalf("%s:%d: AssertImplements failed, interface = %T, obj = %T, %s", file, line, interfaceObj, obj, msg)
 		} else {
-			t.Fatalf("%s:%d: AssertImplements failed, interface = %T, obj = %v", file, line, interfaceObj, obj)
+			t.Fatalf("%s:%d: AssertImplements failed, interface = %T, obj = %T", file, line, interfaceObj, obj)
 		}
 	}
 }
@@ -642,12 +642,12 @@ func AssertSameType(t testing.TB, expectedType interface{}, obj interface{}, arg
 }
 
 func AssertPanic(t testing.TB, f func(), args ...interface{}) {
-	var panicVal interface{}
-	func() {
+	panicVal := func() (panicVal interface{}) {
 		defer func() {
 			panicVal = recover()
 		}()
 		f()
+		return
 	}()
 
 	if panicVal == nil {
@@ -661,12 +661,12 @@ func AssertPanic(t testing.TB, f func(), args ...interface{}) {
 }
 
 func AssertNotPanic(t testing.TB, f func(), args ...interface{}) {
-	var panicVal interface{}
-	func() {
+	panicVal := func() (panicVal interface{}) {
 		defer func() {
 			panicVal = recover()
 		}()
 		f()
+		return
 	}()
 
 	if panicVal != nil {
