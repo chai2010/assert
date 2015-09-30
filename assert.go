@@ -125,7 +125,7 @@ func AssertFalse(t testing.TB, condition bool, args ...interface{}) {
 
 func AssertEqual(t testing.TB, expected, got interface{}, args ...interface{}) {
 	// reflect.DeepEqual is failed for `int == int64?`
-	if fmt.Sprintf("%q", expected) != fmt.Sprintf("%q", got) {
+	if fmt.Sprintf("%v", expected) != fmt.Sprintf("%v", got) {
 		file, line := tCallerFileLine(1)
 		if msg := fmt.Sprint(args...); msg != "" {
 			t.Fatalf("%s:%d: AssertEqual failed, expected = %v, got = %v, %s", file, line, expected, got, msg)
@@ -137,7 +137,7 @@ func AssertEqual(t testing.TB, expected, got interface{}, args ...interface{}) {
 
 func AssertNotEqual(t testing.TB, expected, got interface{}, args ...interface{}) {
 	// reflect.DeepEqual is failed for `int == int64?`
-	if fmt.Sprintf("%q", expected) == fmt.Sprintf("%q", got) {
+	if fmt.Sprintf("%v", expected) == fmt.Sprintf("%v", got) {
 		file, line := tCallerFileLine(1)
 		if msg := fmt.Sprint(args...); msg != "" {
 			t.Fatalf("%s:%d: AssertNotEqual failed, expected = %v, got = %v, %s", file, line, expected, got, msg)

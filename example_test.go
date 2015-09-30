@@ -44,7 +44,11 @@ func TestAssertEqual(t *testing.T) {
 
 	AssertEqual(t, 2, int64(2))
 	AssertEqual(t, []string{"abc", "123"}, append([]string{}, "abc", "123"))
+
+	AssertEqual(t, 123, "123")
 	AssertEqual(t, []string{}, []string(nil))
+	AssertEqual(t, []interface{}{}, []interface{}(nil))
+	AssertEqual(t, append([]interface{}{}, "abc", "123"), []interface{}{"abc", 123})
 }
 
 func TestAssertNotEqual(t *testing.T) {
