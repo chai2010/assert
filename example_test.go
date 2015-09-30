@@ -41,6 +41,10 @@ func TestAssertEqual(t *testing.T) {
 	AssertEqual(t, "abc", strings.ToLower("ABC"))
 	AssertEqual(t, []byte("abc"), bytes.ToLower([]byte("ABC")))
 	AssertEqual(t, image.Pt(1, 2), image.Pt(1, 2))
+
+	AssertEqual(t, 2, int64(2))
+	AssertEqual(t, []string{"abc", "123"}, append([]string{}, "abc", "123"))
+	AssertEqual(t, []string{}, []string(nil))
 }
 
 func TestAssertNotEqual(t *testing.T) {
@@ -206,4 +210,8 @@ func TestAssertPanic(t *testing.T) {
 
 func TestAssertNotPanic(t *testing.T) {
 	AssertNotPanic(t, func() {})
+}
+
+func TestAssertEQ(t *testing.T) {
+
 }
