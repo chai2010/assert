@@ -13,9 +13,25 @@ import (
 	"reflect"
 	"regexp"
 	"runtime"
+	"sort"
 	"strings"
 	"testing"
 )
+
+func tSortInts(v []int) []int {
+	sort.Ints(v)
+	return v
+}
+
+func tSortFloat64s(v []float64) []float64 {
+	sort.Float64s(v)
+	return v
+}
+
+func tSortStrings(ss []string) []string {
+	sort.Strings(ss)
+	return ss
+}
 
 func tCallerFileLine(skip int) (file string, line int) {
 	_, file, line, ok := runtime.Caller(skip + 1)
@@ -40,6 +56,17 @@ func Assert(t testing.TB, condition bool, args ...interface{}) {
 			t.Fatalf("%s:%d: Assert failed, %s", file, line, msg)
 		} else {
 			t.Fatalf("%s:%d: Assert failed", file, line)
+		}
+	}
+}
+
+func Assertf(t *testing.T, condition bool, format string, a ...interface{}) {
+	if !condition {
+		file, line := tCallerFileLine(1)
+		if msg := fmt.Sprintf(format, a...); msg != "" {
+			t.Fatalf("%s:%d: tAssert failed, %s", file, line, msg)
+		} else {
+			t.Fatalf("%s:%d: tAssert failed", file, line)
 		}
 	}
 }
@@ -427,7 +454,7 @@ func AssertSameType(t testing.TB, expectedType interface{}, obj interface{}, arg
 	}
 }
 
-func AssertSameStruct(t testing.TB, expectedStruct interface{}, obj interface{}, args ...interface{}) {
+func _AssertSameStruct(t testing.TB, expectedStruct interface{}, obj interface{}, args ...interface{}) {
 	// type TypeA struct { A int, B float, C bool }
 	// type TypeB struct { A int, B float, C bool }
 	// AssertSameStruct(t, new(TypeA), new(TypeB))
