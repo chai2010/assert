@@ -49,6 +49,7 @@ func TestAssertEqual(t *testing.T) {
 	AssertEqual(t, []string{}, []string(nil))
 	AssertEqual(t, []interface{}{}, []interface{}(nil))
 	AssertEqual(t, append([]interface{}{}, "abc", "123"), []interface{}{"abc", 123})
+
 }
 
 func TestAssertNotEqual(t *testing.T) {
@@ -107,6 +108,18 @@ func TestAssertMapContain(t *testing.T) {
 		},
 		"MST", -7*60*60,
 	)
+}
+
+func TestAssertMapEqual(t *testing.T) {
+	a := make(map[string]string)
+	b := make(map[interface{}]interface{})
+
+	for i := 0; i < 1000; i++ {
+		a[fmt.Sprintf("%d", i)] = fmt.Sprintf("%d", i)
+		b[fmt.Sprintf("%d", i)] = i
+	}
+
+	AssertMapEqual(t, a, b)
 }
 
 func TestAssertMapContainKey(t *testing.T) {

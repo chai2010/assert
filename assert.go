@@ -262,6 +262,48 @@ func AssertSliceNotContain(t testing.TB, slice, val interface{}, args ...interfa
 	}
 }
 
+func AssertMapEqual(t testing.TB, expected, got interface{}, args ...interface{}) {
+	expectedMap := reflect.ValueOf(expected)
+	if expectedMap.Kind() != reflect.Map {
+		panic(fmt.Sprintf("AssertMapEqual called with non-map expected value of type %T", expected))
+	}
+	gotMap := reflect.ValueOf(got)
+	if gotMap.Kind() != reflect.Map {
+		panic(fmt.Sprintf("AssertMapEqual called with non-map got value of type %T", got))
+	}
+
+	if a, b := expectedMap.Len(), gotMap.Len(); a != b {
+		file, line := tCallerFileLine(1)
+		if msg := fmt.Sprint(args...); msg != "" {
+			t.Fatalf("%s:%d: AssertMapEqual failed, len(expected) = %d, len(got) = %d, %s", file, line, a, b, msg)
+		} else {
+			t.Fatalf("%s:%d: AssertMapEqual failed, len(expected) = %d, len(got) = %d", file, line, a, b)
+		}
+		return
+	}
+
+	for _, key := range expectedMap.MapKeys() {
+		expectedVal := expectedMap.MapIndex(key).Interface()
+		gotVal := gotMap.MapIndex(key).Interface()
+
+		if fmt.Sprintf("%v", expectedVal) != fmt.Sprintf("%v", gotVal) {
+			file, line := tCallerFileLine(1)
+			if msg := fmt.Sprint(args...); msg != "" {
+				t.Fatalf(
+					"%s:%d: AssertMapEqual failed, key = %v, expected = %v, got = %v, %s",
+					file, line, key.Interface(), expectedVal, gotVal, msg,
+				)
+			} else {
+				t.Fatalf(
+					"%s:%d: AssertMapEqual failed, key = %v, expected = %v, got = %v",
+					file, line, key.Interface(), expectedVal, gotVal,
+				)
+			}
+			return
+		}
+	}
+}
+
 func AssertMapContain(t testing.TB, m, key, val interface{}, args ...interface{}) {
 	mapVal := reflect.ValueOf(m)
 	if mapVal.Kind() != reflect.Map {
