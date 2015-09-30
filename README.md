@@ -1,7 +1,8 @@
 Assert for Go testing
 =====================
 
-PkgDoc: [http://godoc.org/github.com/chai2010/assert](http://godoc.org/github.com/chai2010/assert)
+[![Build Status](https://travis-ci.org/chai2010/assert.svg)](https://travis-ci.org/chai2010/assert)
+[![GoDoc](https://godoc.org/github.com/chai2010/assert?status.svg)](https://godoc.org/github.com/chai2010/assert)
 
 
 Install
