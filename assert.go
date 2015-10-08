@@ -8,6 +8,7 @@ package assert
 
 import (
 	"fmt"
+	"image"
 	"math"
 	"os"
 	"reflect"
@@ -17,6 +18,27 @@ import (
 	"strings"
 	"testing"
 )
+
+func tMinInt(a, b int) int {
+	if a <= b {
+		return a
+	}
+	return b
+}
+
+func tMaxInt(a, b int) int {
+	if a >= b {
+		return a
+	}
+	return b
+}
+
+func tDeltaInt(a, b int) int {
+	if a >= b {
+		return a - b
+	}
+	return b - a
+}
 
 func tSortInts(v []int) []int {
 	sort.Ints(v)
@@ -31,6 +53,31 @@ func tSortFloat64s(v []float64) []float64 {
 func tSortStrings(ss []string) []string {
 	sort.Strings(ss)
 	return ss
+}
+
+func tImageEqual(m0, m1 image.Image, maxDelta int) (ok bool, failedPixelPos image.Point) {
+	b := m0.Bounds()
+	for y := b.Min.Y; y < b.Max.Y; y++ {
+		for x := b.Min.X; x < b.Max.X; x++ {
+			c0 := m0.At(x, y)
+			c1 := m1.At(x, y)
+			r0, g0, b0, a0 := c0.RGBA()
+			r1, g1, b1, a1 := c1.RGBA()
+			if tDeltaInt(int(r0), int(r1)) > maxDelta {
+				return false, image.Pt(x, y)
+			}
+			if tDeltaInt(int(g0), int(g1)) > maxDelta {
+				return false, image.Pt(x, y)
+			}
+			if tDeltaInt(int(b0), int(b1)) > maxDelta {
+				return false, image.Pt(x, y)
+			}
+			if tDeltaInt(int(a0), int(a1)) > maxDelta {
+				return false, image.Pt(x, y)
+			}
+		}
+	}
+	return true, image.Pt(0, 0)
 }
 
 func tCallerFileLine(skip int) (file string, line int) {
@@ -537,6 +584,17 @@ func AssertNotPanic(t testing.TB, f func(), args ...interface{}) {
 			t.Fatalf("%s:%d: AssertNotPanic failed, panic = %v, %s", file, line, panicVal, msg)
 		} else {
 			t.Fatalf("%s:%d: AssertNotPanic failed, panic = %v", file, line, panicVal)
+		}
+	}
+}
+
+func AssertImageEqual(t testing.TB, expected, got image.Image, maxDelta int, args ...interface{}) {
+	if equal, pos := tImageEqual(expected, got, maxDelta); !equal {
+		file, line := tCallerFileLine(1)
+		if msg := fmt.Sprint(args...); msg != "" {
+			t.Fatalf("%s:%d: AssertImageEqual failed, pos = %v, expected = %v, got = %v, %s", file, line, pos, expected, got, msg)
+		} else {
+			t.Fatalf("%s:%d: AssertImageEqual failed, pos = %v, expected = %v, got = %v", file, line, pos, expected, got)
 		}
 	}
 }
