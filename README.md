@@ -3,8 +3,6 @@
 [![Build Status](https://travis-ci.org/chai2010/assert.svg)](https://travis-ci.org/chai2010/assert)
 [![Go Report Card](https://goreportcard.com/badge/github.com/chai2010/assert)](https://goreportcard.com/report/github.com/chai2010/assert)
 [![GoDoc](https://godoc.org/github.com/chai2010/assert?status.svg)](https://godoc.org/github.com/chai2010/assert)
-[![License](http://img.shields.io/badge/license-apache%20v2-blue.svg)](https://github.com/chai2010/assert/blob/master/LICENSE)
-
 
 ## Install
 
