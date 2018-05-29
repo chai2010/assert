@@ -1,5 +1,7 @@
 language: go
 
 go:
-  - 1.4
-  - tip
+  - "1.10"
+  - "tip"
+
+go_import_path: github.com/chai2010/assert
