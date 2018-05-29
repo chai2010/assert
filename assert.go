@@ -4,8 +4,6 @@
 
 // +build go1.10
 
-// testing helper, please fork this file to `xxx_assert_test.go`, and fix the package name.
-
 package assert
 
 import (
