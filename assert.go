@@ -461,13 +461,6 @@ func AssertSameType(t testing.TB, expectedType interface{}, obj interface{}, arg
 	}
 }
 
-func _AssertSameStruct(t testing.TB, expectedStruct interface{}, obj interface{}, args ...interface{}) {
-	// type TypeA struct { A int, B float, C bool }
-	// type TypeB struct { A int, B float, C bool }
-	// AssertSameStruct(t, new(TypeA), new(TypeB))
-	panic("TODO")
-}
-
 func AssertPanic(t testing.TB, f func(), args ...interface{}) {
 	t.Helper()
 
