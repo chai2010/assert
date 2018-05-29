@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
+// +build go1.10
+
 // testing helper, please fork this file to `xxx_assert_test.go`, and fix the package name.
 
 package assert
@@ -13,9 +15,7 @@ import (
 	"os"
 	"reflect"
 	"regexp"
-	"runtime"
 	"sort"
-	"strings"
 	"testing"
 )
 
@@ -143,104 +143,88 @@ func tImageEqual(m0, m1 image.Image, maxDelta int) (ok bool, failedPixelPos imag
 	return true, image.Pt(0, 0)
 }
 
-func tCallerFileLine(skip int) (file string, line int) {
-	_, file, line, ok := runtime.Caller(skip + 1)
-	if ok {
-		// Truncate file name at last file name separator.
-		if index := strings.LastIndex(file, "/"); index >= 0 {
-			file = file[index+1:]
-		} else if index = strings.LastIndex(file, "\\"); index >= 0 {
-			file = file[index+1:]
-		}
-	} else {
-		file = "???"
-		line = 1
-	}
-	return
-}
-
 func Assert(t testing.TB, condition bool, args ...interface{}) {
+	t.Helper()
 	if !condition {
-		file, line := tCallerFileLine(1)
 		if msg := fmt.Sprint(args...); msg != "" {
-			t.Fatalf("%s:%d: Assert failed, %s", file, line, msg)
+			t.Fatalf("Assert failed, %s", msg)
 		} else {
-			t.Fatalf("%s:%d: Assert failed", file, line)
+			t.Fatalf("Assert failed")
 		}
 	}
 }
 
 func Assertf(t *testing.T, condition bool, format string, a ...interface{}) {
+	t.Helper()
 	if !condition {
-		file, line := tCallerFileLine(1)
 		if msg := fmt.Sprintf(format, a...); msg != "" {
-			t.Fatalf("%s:%d: tAssert failed, %s", file, line, msg)
+			t.Fatalf("tAssert failed, %s", msg)
 		} else {
-			t.Fatalf("%s:%d: tAssert failed", file, line)
+			t.Fatalf("tAssert failed")
 		}
 	}
 }
 
 func AssertNil(t testing.TB, p interface{}, args ...interface{}) {
+	t.Helper()
 	if p != nil {
-		file, line := tCallerFileLine(1)
 		if msg := fmt.Sprint(args...); msg != "" {
 			if err, ok := p.(error); ok && err != nil {
-				t.Fatalf("%s:%d: AssertNil failed, err = %v, %s", file, line, err, msg)
+				t.Fatalf("AssertNil failed, err = %v, %s", err, msg)
 			} else {
-				t.Fatalf("%s:%d: AssertNil failed, %s", file, line, msg)
+				t.Fatalf("AssertNil failed, %s", msg)
 			}
 		} else {
 			if err, ok := p.(error); ok && err != nil {
-				t.Fatalf("%s:%d: AssertNil failed, err = %v", file, line, err)
+				t.Fatalf("AssertNil failed, err = %v", err)
 			} else {
-				t.Fatalf("%s:%d: AssertNil failed", file, line)
+				t.Fatalf("AssertNil failed")
 			}
 		}
 	}
 }
 
 func AssertNotNil(t testing.TB, p interface{}, args ...interface{}) {
+	t.Helper()
 	if p == nil {
-		file, line := tCallerFileLine(1)
 		if msg := fmt.Sprint(args...); msg != "" {
-			t.Fatalf("%s:%d: AssertNotNil failed, %s", file, line, msg)
+			t.Fatalf("AssertNotNil failed, %s", msg)
 		} else {
-			t.Fatalf("%s:%d: AssertNotNil failed", file, line)
+			t.Fatalf("AssertNotNil failed")
 		}
 	}
 }
 
 func AssertTrue(t testing.TB, condition bool, args ...interface{}) {
+	t.Helper()
 	if condition != true {
-		file, line := tCallerFileLine(1)
 		if msg := fmt.Sprint(args...); msg != "" {
-			t.Fatalf("%s:%d: AssertTrue failed, %s", file, line, msg)
+			t.Fatalf("AssertTrue failed, %s", msg)
 		} else {
-			t.Fatalf("%s:%d: AssertTrue failed", file, line)
+			t.Fatalf("AssertTrue failed")
 		}
 	}
 }
 
 func AssertFalse(t testing.TB, condition bool, args ...interface{}) {
+	t.Helper()
 	if condition != false {
-		file, line := tCallerFileLine(1)
 		if msg := fmt.Sprint(args...); msg != "" {
-			t.Fatalf("%s:%d: AssertFalse failed, %s", file, line, msg)
+			t.Fatalf("AssertFalse failed, %s", msg)
 		} else {
-			t.Fatalf("%s:%d: AssertFalse failed", file, line)
+			t.Fatalf("AssertFalse failed")
 		}
 	}
 }
 
 func AssertEqual(t testing.TB, expected, got interface{}, args ...interface{}) {
+	t.Helper()
 	// reflect.DeepEqual is failed for `int == int64?`
 	if fmt.Sprintf("%v", expected) != fmt.Sprintf("%v", got) {
-		file, line := tCallerFileLine(1)
 		if msg := fmt.Sprint(args...); msg != "" {
-			t.Fatalf("%s:%d: AssertEqual failed, expected = %v, got = %v, %s", file, line, expected, got, msg)
+			t.Fatalf("AssertEqual failed, expected = %v, got = %v, %s", expected, got, msg)
 		} else {
-			t.Fatalf("%s:%d: AssertEqual failed, expected = %v, got = %v", file, line, expected, got)
+			t.Fatalf("AssertEqual failed, expected = %v, got = %v", expected, got)
 		}
 	}
 }
@@ -248,87 +232,87 @@ func AssertEqual(t testing.TB, expected, got interface{}, args ...interface{}) {
 func AssertNotEqual(t testing.TB, expected, got interface{}, args ...interface{}) {
 	// reflect.DeepEqual is failed for `int == int64?`
 	if fmt.Sprintf("%v", expected) == fmt.Sprintf("%v", got) {
-		file, line := tCallerFileLine(1)
 		if msg := fmt.Sprint(args...); msg != "" {
-			t.Fatalf("%s:%d: AssertNotEqual failed, expected = %v, got = %v, %s", file, line, expected, got, msg)
+			t.Fatalf("AssertNotEqual failed, expected = %v, got = %v, %s", expected, got, msg)
 		} else {
-			t.Fatalf("%s:%d: AssertNotEqual failed, expected = %v, got = %v", file, line, expected, got)
+			t.Fatalf("AssertNotEqual failed, expected = %v, got = %v", expected, got)
 		}
 	}
 }
 
 func AssertNear(t testing.TB, expected, got, abs float64, args ...interface{}) {
+	t.Helper()
 	if math.Abs(expected-got) > abs {
-		file, line := tCallerFileLine(1)
 		if msg := fmt.Sprint(args...); msg != "" {
-			t.Fatalf("%s:%d: AssertNear failed, expected = %v, got = %v, abs = %v, %s", file, line, expected, got, abs, msg)
+			t.Fatalf("AssertNear failed, expected = %v, got = %v, abs = %v, %s", expected, got, abs, msg)
 		} else {
-			t.Fatalf("%s:%d: AssertNear failed, expected = %v, got = %v, abs = %v", file, line, expected, got, abs)
+			t.Fatalf("AssertNear failed, expected = %v, got = %v, abs = %v", expected, got, abs)
 		}
 	}
 }
 
 func AssertBetween(t testing.TB, min, max, val float64, args ...interface{}) {
+	t.Helper()
 	if val < min || max < val {
-		file, line := tCallerFileLine(1)
 		if msg := fmt.Sprint(args...); msg != "" {
-			t.Fatalf("%s:%d: AssertBetween failed, min = %v, max = %v, val = %v, %s", file, line, min, max, val, msg)
+			t.Fatalf("AssertBetween failed, min = %v, max = %v, val = %v, %s", min, max, val, msg)
 		} else {
-			t.Fatalf("%s:%d: AssertBetween failed, min = %v, max = %v, val = %v", file, line, min, max, val)
+			t.Fatalf("AssertBetween failed, min = %v, max = %v, val = %v", min, max, val)
 		}
 	}
 }
 
 func AssertNotBetween(t testing.TB, min, max, val float64, args ...interface{}) {
+	t.Helper()
 	if min <= val && val <= max {
-		file, line := tCallerFileLine(1)
 		if msg := fmt.Sprint(args...); msg != "" {
-			t.Fatalf("%s:%d: AssertNotBetween failed, min = %v, max = %v, val = %v, %s", file, line, min, max, val, msg)
+			t.Fatalf("AssertNotBetween failed, min = %v, max = %v, val = %v, %s", min, max, val, msg)
 		} else {
-			t.Fatalf("%s:%d: AssertNotBetween failed, min = %v, max = %v, val = %v", file, line, min, max, val)
+			t.Fatalf("AssertNotBetween failed, min = %v, max = %v, val = %v", min, max, val)
 		}
 	}
 }
 
 func AssertMatch(t testing.TB, expectedPattern string, got []byte, args ...interface{}) {
+	t.Helper()
 	if matched, err := regexp.Match(expectedPattern, got); err != nil || !matched {
-		file, line := tCallerFileLine(1)
 		if err != nil {
 			if msg := fmt.Sprint(args...); msg != "" {
-				t.Fatalf("%s:%d: AssertMatch failed, expected = %q, got = %v, err = %v, %s", file, line, expectedPattern, got, err, msg)
+				t.Fatalf("AssertMatch failed, expected = %q, got = %v, err = %v, %s", expectedPattern, got, err, msg)
 			} else {
-				t.Fatalf("%s:%d: AssertMatch failed, expected = %q, got = %v, err = %v", file, line, expectedPattern, got, err)
+				t.Fatalf("AssertMatch failed, expected = %q, got = %v, err = %v", expectedPattern, got, err)
 			}
 		} else {
 			if msg := fmt.Sprint(args...); msg != "" {
-				t.Fatalf("%s:%d: AssertMatch failed, expected = %q, got = %v, %s", file, line, expectedPattern, got, msg)
+				t.Fatalf("AssertMatch failed, expected = %q, got = %v, %s", expectedPattern, got, msg)
 			} else {
-				t.Fatalf("%s:%d: AssertMatch failed, expected = %q, got = %v", file, line, expectedPattern, got)
+				t.Fatalf("AssertMatch failed, expected = %q, got = %v", expectedPattern, got)
 			}
 		}
 	}
 }
 
 func AssertMatchString(t testing.TB, expectedPattern, got string, args ...interface{}) {
+	t.Helper()
 	if matched, err := regexp.MatchString(expectedPattern, got); err != nil || !matched {
-		file, line := tCallerFileLine(1)
 		if err != nil {
 			if msg := fmt.Sprint(args...); msg != "" {
-				t.Fatalf("%s:%d: AssertMatchString failed, expected = %q, got = %v, err = %v, %s", file, line, expectedPattern, got, err, msg)
+				t.Fatalf("AssertMatchString failed, expected = %q, got = %v, err = %v, %s", expectedPattern, got, err, msg)
 			} else {
-				t.Fatalf("%s:%d: AssertMatchString failed, expected = %q, got = %v, err = %v", file, line, expectedPattern, got, err)
+				t.Fatalf("AssertMatchString failed, expected = %q, got = %v, err = %v", expectedPattern, got, err)
 			}
 		} else {
 			if msg := fmt.Sprint(args...); msg != "" {
-				t.Fatalf("%s:%d: AssertMatchString failed, expected = %q, got = %v, %s", file, line, expectedPattern, got, msg)
+				t.Fatalf("AssertMatchString failed, expected = %q, got = %v, %s", expectedPattern, got, msg)
 			} else {
-				t.Fatalf("%s:%d: AssertMatchString failed, expected = %q, got = %v", file, line, expectedPattern, got)
+				t.Fatalf("AssertMatchString failed, expected = %q, got = %v", expectedPattern, got)
 			}
 		}
 	}
 }
 
 func AssertSliceContain(t testing.TB, slice, val interface{}, args ...interface{}) {
+	t.Helper()
 	sliceVal := reflect.ValueOf(slice)
 	if sliceVal.Kind() != reflect.Slice {
 		panic(fmt.Sprintf("AssertSliceContain called with non-slice value of type %T", slice))
@@ -341,16 +325,16 @@ func AssertSliceContain(t testing.TB, slice, val interface{}, args ...interface{
 		}
 	}
 	if !contained {
-		file, line := tCallerFileLine(1)
 		if msg := fmt.Sprint(args...); msg != "" {
-			t.Fatalf("%s:%d: AssertSliceContain failed, slice = %v, val = %v, %s", file, line, slice, val, msg)
+			t.Fatalf("AssertSliceContain failed, slice = %v, val = %v, %s", slice, val, msg)
 		} else {
-			t.Fatalf("%s:%d: AssertSliceContain failed, slice = %v, val = %v", file, line, slice, val)
+			t.Fatalf("AssertSliceContain failed, slice = %v, val = %v", slice, val)
 		}
 	}
 }
 
 func AssertSliceNotContain(t testing.TB, slice, val interface{}, args ...interface{}) {
+	t.Helper()
 	sliceVal := reflect.ValueOf(slice)
 	if sliceVal.Kind() != reflect.Slice {
 		panic(fmt.Sprintf("AssertSliceNotContain called with non-slice value of type %T", slice))
@@ -363,16 +347,16 @@ func AssertSliceNotContain(t testing.TB, slice, val interface{}, args ...interfa
 		}
 	}
 	if contained {
-		file, line := tCallerFileLine(1)
 		if msg := fmt.Sprint(args...); msg != "" {
-			t.Fatalf("%s:%d: AssertSliceNotContain failed, slice = %v, val = %v, %s", file, line, slice, val, msg)
+			t.Fatalf("AssertSliceNotContain failed, slice = %v, val = %v, %s", slice, val, msg)
 		} else {
-			t.Fatalf("%s:%d: AssertSliceNotContain failed, slice = %v, val = %v", file, line, slice, val)
+			t.Fatalf("AssertSliceNotContain failed, slice = %v, val = %v", slice, val)
 		}
 	}
 }
 
 func AssertMapEqual(t testing.TB, expected, got interface{}, args ...interface{}) {
+	t.Helper()
 	expectedMap := reflect.ValueOf(expected)
 	if expectedMap.Kind() != reflect.Map {
 		panic(fmt.Sprintf("AssertMapEqual called with non-map expected value of type %T", expected))
@@ -383,11 +367,10 @@ func AssertMapEqual(t testing.TB, expected, got interface{}, args ...interface{}
 	}
 
 	if a, b := expectedMap.Len(), gotMap.Len(); a != b {
-		file, line := tCallerFileLine(1)
 		if msg := fmt.Sprint(args...); msg != "" {
-			t.Fatalf("%s:%d: AssertMapEqual failed, len(expected) = %d, len(got) = %d, %s", file, line, a, b, msg)
+			t.Fatalf("AssertMapEqual failed, len(expected) = %d, len(got) = %d, %s", a, b, msg)
 		} else {
-			t.Fatalf("%s:%d: AssertMapEqual failed, len(expected) = %d, len(got) = %d", file, line, a, b)
+			t.Fatalf("AssertMapEqual failed, len(expected) = %d, len(got) = %d", a, b)
 		}
 		return
 	}
@@ -397,16 +380,15 @@ func AssertMapEqual(t testing.TB, expected, got interface{}, args ...interface{}
 		gotVal := gotMap.MapIndex(key).Interface()
 
 		if fmt.Sprintf("%v", expectedVal) != fmt.Sprintf("%v", gotVal) {
-			file, line := tCallerFileLine(1)
 			if msg := fmt.Sprint(args...); msg != "" {
 				t.Fatalf(
-					"%s:%d: AssertMapEqual failed, key = %v, expected = %v, got = %v, %s",
-					file, line, key.Interface(), expectedVal, gotVal, msg,
+					"AssertMapEqual failed, key = %v, expected = %v, got = %v, %s",
+					key.Interface(), expectedVal, gotVal, msg,
 				)
 			} else {
 				t.Fatalf(
-					"%s:%d: AssertMapEqual failed, key = %v, expected = %v, got = %v",
-					file, line, key.Interface(), expectedVal, gotVal,
+					"AssertMapEqual failed, key = %v, expected = %v, got = %v",
+					key.Interface(), expectedVal, gotVal,
 				)
 			}
 			return
@@ -415,38 +397,39 @@ func AssertMapEqual(t testing.TB, expected, got interface{}, args ...interface{}
 }
 
 func AssertMapContain(t testing.TB, m, key, val interface{}, args ...interface{}) {
+	t.Helper()
 	mapVal := reflect.ValueOf(m)
 	if mapVal.Kind() != reflect.Map {
 		panic(fmt.Sprintf("AssertMapContain called with non-map value of type %T", m))
 	}
 	elemVal := mapVal.MapIndex(reflect.ValueOf(key))
 	if !elemVal.IsValid() || !reflect.DeepEqual(elemVal.Interface(), val) {
-		file, line := tCallerFileLine(1)
 		if msg := fmt.Sprint(args...); msg != "" {
-			t.Fatalf("%s:%d: AssertMapContain failed, map = %v, key = %v, val = %v, %s", file, line, m, key, val, msg)
+			t.Fatalf("AssertMapContain failed, map = %v, key = %v, val = %v, %s", m, key, val, msg)
 		} else {
-			t.Fatalf("%s:%d: AssertMapContain failed, map = %v, key = %v, val = %v", file, line, m, key, val)
+			t.Fatalf("AssertMapContain failed, map = %v, key = %v, val = %v", m, key, val)
 		}
 	}
 }
 
 func AssertMapContainKey(t testing.TB, m, key interface{}, args ...interface{}) {
+	t.Helper()
 	mapVal := reflect.ValueOf(m)
 	if mapVal.Kind() != reflect.Map {
 		panic(fmt.Sprintf("AssertMapContainKey called with non-map value of type %T", m))
 	}
 	elemVal := mapVal.MapIndex(reflect.ValueOf(key))
 	if !elemVal.IsValid() {
-		file, line := tCallerFileLine(1)
 		if msg := fmt.Sprint(args...); msg != "" {
-			t.Fatalf("%s:%d: AssertMapContainKey failed, map = %v, key = %v, %s", file, line, m, key, msg)
+			t.Fatalf("AssertMapContainKey failed, map = %v, key = %v, %s", m, key, msg)
 		} else {
-			t.Fatalf("%s:%d: AssertMapContainKey failed, map = %v, key = %v", file, line, m, key)
+			t.Fatalf("AssertMapContainKey failed, map = %v, key = %v", m, key)
 		}
 	}
 }
 
 func AssertMapContainVal(t testing.TB, m, val interface{}, args ...interface{}) {
+	t.Helper()
 	mapVal := reflect.ValueOf(m)
 	if mapVal.Kind() != reflect.Map {
 		panic(fmt.Sprintf("AssertMapContainVal called with non-map value of type %T", m))
@@ -460,48 +443,48 @@ func AssertMapContainVal(t testing.TB, m, val interface{}, args ...interface{}) 
 		}
 	}
 	if !contained {
-		file, line := tCallerFileLine(1)
 		if msg := fmt.Sprint(args...); msg != "" {
-			t.Fatalf("%s:%d: AssertMapContainVal failed, map = %v, val = %v, %s", file, line, m, val, msg)
+			t.Fatalf("AssertMapContainVal failed, map = %v, val = %v, %s", m, val, msg)
 		} else {
-			t.Fatalf("%s:%d: AssertMapContainVal failed, map = %v, val = %v", file, line, m, val)
+			t.Fatalf("AssertMapContainVal failed, map = %v, val = %v", m, val)
 		}
 	}
 }
 
 func AssertMapNotContain(t testing.TB, m, key, val interface{}, args ...interface{}) {
+	t.Helper()
 	mapVal := reflect.ValueOf(m)
 	if mapVal.Kind() != reflect.Map {
 		panic(fmt.Sprintf("AssertMapNotContain called with non-map value of type %T", m))
 	}
 	elemVal := mapVal.MapIndex(reflect.ValueOf(key))
 	if elemVal.IsValid() && reflect.DeepEqual(elemVal.Interface(), val) {
-		file, line := tCallerFileLine(1)
 		if msg := fmt.Sprint(args...); msg != "" {
-			t.Fatalf("%s:%d: AssertMapNotContain failed, map = %v, key = %v, val = %v, %s", file, line, m, key, val, msg)
+			t.Fatalf("AssertMapNotContain failed, map = %v, key = %v, val = %v, %s", m, key, val, msg)
 		} else {
-			t.Fatalf("%s:%d: AssertMapNotContain failed, map = %v, key = %v, val = %v", file, line, m, key, val)
+			t.Fatalf("AssertMapNotContain failed, map = %v, key = %v, val = %v", m, key, val)
 		}
 	}
 }
 
 func AssertMapNotContainKey(t testing.TB, m, key interface{}, args ...interface{}) {
+	t.Helper()
 	mapVal := reflect.ValueOf(m)
 	if mapVal.Kind() != reflect.Map {
 		panic(fmt.Sprintf("AssertMapNotContainKey called with non-map value of type %T", m))
 	}
 	elemVal := mapVal.MapIndex(reflect.ValueOf(key))
 	if elemVal.IsValid() {
-		file, line := tCallerFileLine(1)
 		if msg := fmt.Sprint(args...); msg != "" {
-			t.Fatalf("%s:%d: AssertMapNotContainKey failed, map = %v, key = %v, %s", file, line, m, key, msg)
+			t.Fatalf("AssertMapNotContainKey failed, map = %v, key = %v, %s", m, key, msg)
 		} else {
-			t.Fatalf("%s:%d: AssertMapNotContainKey failed, map = %v, key = %v", file, line, m, key)
+			t.Fatalf("AssertMapNotContainKey failed, map = %v, key = %v", m, key)
 		}
 	}
 }
 
 func AssertMapNotContainVal(t testing.TB, m, val interface{}, args ...interface{}) {
+	t.Helper()
 	mapVal := reflect.ValueOf(m)
 	if mapVal.Kind() != reflect.Map {
 		panic(fmt.Sprintf("AssertMapNotContainVal called with non-map value of type %T", m))
@@ -515,93 +498,92 @@ func AssertMapNotContainVal(t testing.TB, m, val interface{}, args ...interface{
 		}
 	}
 	if contained {
-		file, line := tCallerFileLine(1)
 		if msg := fmt.Sprint(args...); msg != "" {
-			t.Fatalf("%s:%d: AssertMapNotContainVal failed, map = %v, val = %v, %s", file, line, m, val, msg)
+			t.Fatalf("AssertMapNotContainVal failed, map = %v, val = %v, %s", m, val, msg)
 		} else {
-			t.Fatalf("%s:%d: AssertMapNotContainVal failed, map = %v, val = %v", file, line, m, val)
+			t.Fatalf("AssertMapNotContainVal failed, map = %v, val = %v", m, val)
 		}
 	}
 }
 
 func AssertZero(t testing.TB, val interface{}, args ...interface{}) {
+	t.Helper()
 	if !reflect.DeepEqual(reflect.Zero(reflect.TypeOf(val)).Interface(), val) {
-		file, line := tCallerFileLine(1)
 		if msg := fmt.Sprint(args...); msg != "" {
-			t.Fatalf("%s:%d: AssertZero failed, val = %v, %s", file, line, val, msg)
+			t.Fatalf("AssertZero failed, val = %v, %s", val, msg)
 		} else {
-			t.Fatalf("%s:%d: AssertZero failed, val = %v", file, line, val)
+			t.Fatalf("AssertZero failed, val = %v", val)
 		}
 	}
 }
 
 func AssertNotZero(t testing.TB, val interface{}, args ...interface{}) {
+	t.Helper()
 	if reflect.DeepEqual(reflect.Zero(reflect.TypeOf(val)).Interface(), val) {
-		file, line := tCallerFileLine(1)
 		if msg := fmt.Sprint(args...); msg != "" {
-			t.Fatalf("%s:%d: AssertNotZero failed, val = %v, %s", file, line, val, msg)
+			t.Fatalf("AssertNotZero failed, val = %v, %s", val, msg)
 		} else {
-			t.Fatalf("%s:%d: AssertNotZero failed, val = %v", file, line, val)
+			t.Fatalf("AssertNotZero failed, val = %v", val)
 		}
 	}
 }
 
 func AssertFileExists(t testing.TB, path string, args ...interface{}) {
+	t.Helper()
 	if _, err := os.Stat(path); err != nil {
-		file, line := tCallerFileLine(1)
 		if msg := fmt.Sprint(args...); msg != "" {
 			if err != nil {
-				t.Fatalf("%s:%d: AssertFileExists failed, path = %v, err = %v, %s", file, line, path, err, msg)
+				t.Fatalf("AssertFileExists failed, path = %v, err = %v, %s", path, err, msg)
 			} else {
-				t.Fatalf("%s:%d: AssertFileExists failed, path = %v, %s", file, line, path, msg)
+				t.Fatalf("AssertFileExists failed, path = %v, %s", path, msg)
 			}
 		} else {
 			if err != nil {
-				t.Fatalf("%s:%d: AssertFileExists failed, path = %v, err = %v", file, line, path, err)
+				t.Fatalf("AssertFileExists failed, path = %v, err = %v", path, err)
 			} else {
-				t.Fatalf("%s:%d: AssertFileExists failed, path = %v", file, line, path)
+				t.Fatalf("AssertFileExists failed, path = %v", path)
 			}
 		}
 	}
 }
 
 func AssertFileNotExists(t testing.TB, path string, args ...interface{}) {
+	t.Helper()
 	if _, err := os.Stat(path); !os.IsNotExist(err) {
-		file, line := tCallerFileLine(1)
 		if msg := fmt.Sprint(args...); msg != "" {
 			if err != nil {
-				t.Fatalf("%s:%d: AssertFileNotExists failed, path = %v, err = %v, %s", file, line, path, err, msg)
+				t.Fatalf("AssertFileNotExists failed, path = %v, err = %v, %s", path, err, msg)
 			} else {
-				t.Fatalf("%s:%d: AssertFileNotExists failed, path = %v, %s", file, line, path, msg)
+				t.Fatalf("AssertFileNotExists failed, path = %v, %s", path, msg)
 			}
 		} else {
 			if err != nil {
-				t.Fatalf("%s:%d: AssertFileNotExists failed, path = %v, err = %v", file, line, path, err)
+				t.Fatalf("AssertFileNotExists failed, path = %v, err = %v", path, err)
 			} else {
-				t.Fatalf("%s:%d: AssertFileNotExists failed, path = %v", file, line, path)
+				t.Fatalf("AssertFileNotExists failed, path = %v", path)
 			}
 		}
 	}
 }
 
 func AssertImplements(t testing.TB, interfaceObj, obj interface{}, args ...interface{}) {
+	t.Helper()
 	if !reflect.TypeOf(obj).Implements(reflect.TypeOf(interfaceObj).Elem()) {
-		file, line := tCallerFileLine(1)
 		if msg := fmt.Sprint(args...); msg != "" {
-			t.Fatalf("%s:%d: AssertImplements failed, interface = %T, obj = %T, %s", file, line, interfaceObj, obj, msg)
+			t.Fatalf("AssertImplements failed, interface = %T, obj = %T, %s", interfaceObj, obj, msg)
 		} else {
-			t.Fatalf("%s:%d: AssertImplements failed, interface = %T, obj = %T", file, line, interfaceObj, obj)
+			t.Fatalf("AssertImplements failed, interface = %T, obj = %T", interfaceObj, obj)
 		}
 	}
 }
 
 func AssertSameType(t testing.TB, expectedType interface{}, obj interface{}, args ...interface{}) {
+	t.Helper()
 	if !reflect.DeepEqual(reflect.TypeOf(obj), reflect.TypeOf(expectedType)) {
-		file, line := tCallerFileLine(1)
 		if msg := fmt.Sprint(args...); msg != "" {
-			t.Fatalf("%s:%d: AssertSameType failed, expected = %T, obj = %T, %s", file, line, expectedType, obj, msg)
+			t.Fatalf("AssertSameType failed, expected = %T, obj = %T, %s", expectedType, obj, msg)
 		} else {
-			t.Fatalf("%s:%d: AssertSameType failed, expected = %T, obj = %T", file, line, expectedType, obj)
+			t.Fatalf("AssertSameType failed, expected = %T, obj = %T", expectedType, obj)
 		}
 	}
 }
@@ -614,6 +596,8 @@ func _AssertSameStruct(t testing.TB, expectedStruct interface{}, obj interface{}
 }
 
 func AssertPanic(t testing.TB, f func(), args ...interface{}) {
+	t.Helper()
+
 	panicVal := func() (panicVal interface{}) {
 		defer func() {
 			panicVal = recover()
@@ -623,16 +607,17 @@ func AssertPanic(t testing.TB, f func(), args ...interface{}) {
 	}()
 
 	if panicVal == nil {
-		file, line := tCallerFileLine(1)
 		if msg := fmt.Sprint(args...); msg != "" {
-			t.Fatalf("%s:%d: AssertPanic failed, %s", file, line, msg)
+			t.Fatalf("AssertPanic failed, %s", msg)
 		} else {
-			t.Fatalf("%s:%d: AssertPanic failed", file, line)
+			t.Fatalf("AssertPanic failed")
 		}
 	}
 }
 
 func AssertNotPanic(t testing.TB, f func(), args ...interface{}) {
+	t.Helper()
+
 	panicVal := func() (panicVal interface{}) {
 		defer func() {
 			panicVal = recover()
@@ -642,55 +627,58 @@ func AssertNotPanic(t testing.TB, f func(), args ...interface{}) {
 	}()
 
 	if panicVal != nil {
-		file, line := tCallerFileLine(1)
 		if msg := fmt.Sprint(args...); msg != "" {
-			t.Fatalf("%s:%d: AssertNotPanic failed, panic = %v, %s", file, line, panicVal, msg)
+			t.Fatalf("AssertNotPanic failed, panic = %v, %s", panicVal, msg)
 		} else {
-			t.Fatalf("%s:%d: AssertNotPanic failed, panic = %v", file, line, panicVal)
+			t.Fatalf("AssertNotPanic failed, panic = %v", panicVal)
 		}
 	}
 }
 
 func AssertImageEqual(t testing.TB, expected, got image.Image, maxDelta int, args ...interface{}) {
+	t.Helper()
+
 	if equal, pos := tImageEqual(expected, got, maxDelta); !equal {
-		file, line := tCallerFileLine(1)
 		if msg := fmt.Sprint(args...); msg != "" {
-			t.Fatalf("%s:%d: AssertImageEqual failed, pos = %v, expected = %v, got = %v, %s", file, line, pos, expected, got, msg)
+			t.Fatalf("AssertImageEqual failed, pos = %v, expected = %v, got = %v, %s", pos, expected, got, msg)
 		} else {
-			t.Fatalf("%s:%d: AssertImageEqual failed, pos = %v, expected = %v, got = %v", file, line, pos, expected, got)
+			t.Fatalf("AssertImageEqual failed, pos = %v, expected = %v, got = %v", pos, expected, got)
 		}
 	}
 }
 
 func AssertEQ(t testing.TB, got, expected interface{}, args ...interface{}) {
+	t.Helper()
+
 	if !reflect.DeepEqual(expected, got) && !tIsNumberEqual(expected, got) {
-		file, line := tCallerFileLine(1)
 		if msg := fmt.Sprint(args...); msg != "" {
-			t.Fatalf("%s:%d: AssertEQ failed, expected = %v, got = %v, %s", file, line, expected, got, msg)
+			t.Fatalf("AssertEQ failed, expected = %v, got = %v, %s", expected, got, msg)
 		} else {
-			t.Fatalf("%s:%d: AssertEQ failed, expected = %v, got = %v", file, line, expected, got)
+			t.Fatalf("AssertEQ failed, expected = %v, got = %v", expected, got)
 		}
 	}
 }
 
 func AssertNE(t testing.TB, got, expected interface{}, args ...interface{}) {
+	t.Helper()
+
 	if reflect.DeepEqual(expected, got) || tIsNumberEqual(expected, got) {
-		file, line := tCallerFileLine(1)
 		if msg := fmt.Sprint(args...); msg != "" {
-			t.Fatalf("%s:%d: AssertNE failed, expected = %v, got = %v, %s", file, line, expected, got, msg)
+			t.Fatalf("AssertNE failed, expected = %v, got = %v, %s", expected, got, msg)
 		} else {
-			t.Fatalf("%s:%d: AssertNE failed, expected = %v, got = %v", file, line, expected, got)
+			t.Fatalf("AssertNE failed, expected = %v, got = %v", expected, got)
 		}
 	}
 }
 
 func AssertLE(t testing.TB, a, b int, args ...interface{}) {
+	t.Helper()
+
 	if !(a <= b) {
-		file, line := tCallerFileLine(1)
 		if msg := fmt.Sprint(args...); msg != "" {
-			t.Fatalf("%s:%d: AssertLE failed, expected %v <= %v, %s", file, line, a, b, msg)
+			t.Fatalf("AssertLE failed, expected %v <= %v, %s", a, b, msg)
 		} else {
-			t.Fatalf("%s:%d: AssertLE failed, expected %v <= %v", file, line, a, b)
+			t.Fatalf("AssertLE failed, expected %v <= %v", a, b)
 		}
 	}
 }
