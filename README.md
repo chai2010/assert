@@ -1,18 +1,17 @@
-Assert for Go testing
-=====================
+# Assert for Go1.10+ testing
 
 [![Build Status](https://travis-ci.org/chai2010/assert.svg)](https://travis-ci.org/chai2010/assert)
+[![Go Report Card](https://goreportcard.com/badge/github.com/chai2010/assert)](https://goreportcard.com/report/github.com/chai2010/assert)
 [![GoDoc](https://godoc.org/github.com/chai2010/assert?status.svg)](https://godoc.org/github.com/chai2010/assert)
+[![License](http://img.shields.io/badge/license-apache%20v2-blue.svg)](https://github.com/chai2010/assert/blob/master/LICENSE)
 
 
-Install
-=======
+## Install
 
 1. `go install github.com/chai2010/assert`
 2. `go test`
 
-Example
-=======
+## Example
 
 ```Go
 // Copyright 2014 <chaishushan{AT}gmail.com>. All rights reserved.
@@ -174,8 +173,7 @@ func TestAssertNotPanic(t *testing.T) {
 }
 ```
 
-BUGS
-====
+## BUGS
 
 Report bugs to <chaishushan@gmail.com>.
 
