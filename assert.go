@@ -13,133 +13,8 @@ import (
 	"os"
 	"reflect"
 	"regexp"
-	"sort"
 	"testing"
 )
-
-func tMinInt(a, b int) int {
-	if a <= b {
-		return a
-	}
-	return b
-}
-
-func tMaxInt(a, b int) int {
-	if a >= b {
-		return a
-	}
-	return b
-}
-
-func tDeltaInt(a, b int) int {
-	if a >= b {
-		return a - b
-	}
-	return b - a
-}
-
-func tIsIntType(v interface{}) bool {
-	switch reflect.ValueOf(v).Kind() {
-	case reflect.Int,
-		reflect.Int8,
-		reflect.Int16,
-		reflect.Int32,
-		reflect.Int64:
-		return true
-	}
-	return false
-}
-
-func tIsUintType(v interface{}) bool {
-	switch reflect.ValueOf(v).Kind() {
-	case reflect.Uint,
-		reflect.Uint8,
-		reflect.Uint16,
-		reflect.Uint32,
-		reflect.Uint64,
-		reflect.Uintptr:
-		return true
-	}
-	return false
-}
-
-func tIsFloatType(v interface{}) bool {
-	switch reflect.ValueOf(v).Kind() {
-	case reflect.Float32,
-		reflect.Float64:
-		return true
-	}
-	return false
-}
-
-func tIsNumberType(v interface{}) bool {
-	switch reflect.ValueOf(v).Kind() {
-	case reflect.Int,
-		reflect.Int8,
-		reflect.Int16,
-		reflect.Int32,
-		reflect.Int64,
-		reflect.Uint,
-		reflect.Uint8,
-		reflect.Uint16,
-		reflect.Uint32,
-		reflect.Uint64,
-		reflect.Uintptr,
-		reflect.Float32,
-		reflect.Float64,
-		reflect.Complex64,
-		reflect.Complex128:
-		return true
-	}
-	return false
-}
-
-func tIsNumberEqual(a, b interface{}) bool {
-	if tIsNumberType(a) && tIsNumberType(b) {
-		return fmt.Sprintf("%v", a) == fmt.Sprintf("%v", b)
-	}
-	return false
-}
-
-func tSortInts(v []int) []int {
-	sort.Ints(v)
-	return v
-}
-
-func tSortFloat64s(v []float64) []float64 {
-	sort.Float64s(v)
-	return v
-}
-
-func tSortStrings(ss []string) []string {
-	sort.Strings(ss)
-	return ss
-}
-
-func tImageEqual(m0, m1 image.Image, maxDelta int) (ok bool, failedPixelPos image.Point) {
-	b := m0.Bounds()
-	for y := b.Min.Y; y < b.Max.Y; y++ {
-		for x := b.Min.X; x < b.Max.X; x++ {
-			c0 := m0.At(x, y)
-			c1 := m1.At(x, y)
-			r0, g0, b0, a0 := c0.RGBA()
-			r1, g1, b1, a1 := c1.RGBA()
-			if tDeltaInt(int(r0), int(r1)) > maxDelta {
-				return false, image.Pt(x, y)
-			}
-			if tDeltaInt(int(g0), int(g1)) > maxDelta {
-				return false, image.Pt(x, y)
-			}
-			if tDeltaInt(int(b0), int(b1)) > maxDelta {
-				return false, image.Pt(x, y)
-			}
-			if tDeltaInt(int(a0), int(a1)) > maxDelta {
-				return false, image.Pt(x, y)
-			}
-		}
-	}
-	return true, image.Pt(0, 0)
-}
 
 func Assert(t testing.TB, condition bool, args ...interface{}) {
 	t.Helper()
@@ -645,38 +520,34 @@ func AssertImageEqual(t testing.TB, expected, got image.Image, maxDelta int, arg
 	}
 }
 
-func AssertEQ(t testing.TB, got, expected interface{}, args ...interface{}) {
-	t.Helper()
-
-	if !reflect.DeepEqual(expected, got) && !tIsNumberEqual(expected, got) {
-		if msg := fmt.Sprint(args...); msg != "" {
-			t.Fatalf("AssertEQ failed, expected = %v, got = %v, %s", expected, got, msg)
-		} else {
-			t.Fatalf("AssertEQ failed, expected = %v, got = %v", expected, got)
+func tImageEqual(m0, m1 image.Image, maxDelta int) (ok bool, failedPixelPos image.Point) {
+	b := m0.Bounds()
+	for y := b.Min.Y; y < b.Max.Y; y++ {
+		for x := b.Min.X; x < b.Max.X; x++ {
+			c0 := m0.At(x, y)
+			c1 := m1.At(x, y)
+			r0, g0, b0, a0 := c0.RGBA()
+			r1, g1, b1, a1 := c1.RGBA()
+			if tDeltaInt(int(r0), int(r1)) > maxDelta {
+				return false, image.Pt(x, y)
+			}
+			if tDeltaInt(int(g0), int(g1)) > maxDelta {
+				return false, image.Pt(x, y)
+			}
+			if tDeltaInt(int(b0), int(b1)) > maxDelta {
+				return false, image.Pt(x, y)
+			}
+			if tDeltaInt(int(a0), int(a1)) > maxDelta {
+				return false, image.Pt(x, y)
+			}
 		}
 	}
+	return true, image.Pt(0, 0)
 }
 
-func AssertNE(t testing.TB, got, expected interface{}, args ...interface{}) {
-	t.Helper()
-
-	if reflect.DeepEqual(expected, got) || tIsNumberEqual(expected, got) {
-		if msg := fmt.Sprint(args...); msg != "" {
-			t.Fatalf("AssertNE failed, expected = %v, got = %v, %s", expected, got, msg)
-		} else {
-			t.Fatalf("AssertNE failed, expected = %v, got = %v", expected, got)
-		}
+func tDeltaInt(a, b int) int {
+	if a >= b {
+		return a - b
 	}
-}
-
-func AssertLE(t testing.TB, a, b int, args ...interface{}) {
-	t.Helper()
-
-	if !(a <= b) {
-		if msg := fmt.Sprint(args...); msg != "" {
-			t.Fatalf("AssertLE failed, expected %v <= %v, %s", a, b, msg)
-		} else {
-			t.Fatalf("AssertLE failed, expected %v <= %v", a, b)
-		}
-	}
+	return b - a
 }
