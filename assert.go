@@ -4,7 +4,34 @@
 
 // +build go1.9
 
-// Package assert provides assert helper functions for testing package.
+/*
+Package assert provides assert helper functions for testing package.
+
+Example:
+
+	package somepkg_test
+
+	import (
+		. "github.com/chai2010/assert"
+	)
+
+	func TestAssert(t *testing.T) {
+		Assert(t, 1 == 1)
+		Assert(t, 1 == 1, "message1", "message2")
+	}
+
+	func TestAssertf(t *testing.T) {
+		Assertf(t, 1 == 1, "%v:%v", "message1", "message2")
+	}
+
+See failed test output (assert_failed_test.go):
+
+	go test -assert.failed
+
+Report bugs to <chaishushan@gmail.com>.
+
+Thanks!
+*/
 package assert
 
 import (
