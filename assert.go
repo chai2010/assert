@@ -4,11 +4,13 @@
 
 // +build go1.9
 
+// Package assert provides assert helper functions for testing package.
 package assert
 
 import (
 	"fmt"
 	"image"
+	"image/color"
 	"math"
 	"os"
 	"reflect"
@@ -103,6 +105,8 @@ func AssertEqual(t testing.TB, expected, got interface{}, args ...interface{}) {
 }
 
 func AssertNotEqual(t testing.TB, expected, got interface{}, args ...interface{}) {
+	t.Helper()
+
 	// reflect.DeepEqual is failed for `int == int64?`
 	if fmt.Sprintf("%v", expected) == fmt.Sprintf("%v", got) {
 		if msg := fmt.Sprint(args...); msg != "" {
@@ -188,7 +192,7 @@ func AssertSliceContain(t testing.TB, slice, val interface{}, args ...interface{
 	t.Helper()
 	sliceVal := reflect.ValueOf(slice)
 	if sliceVal.Kind() != reflect.Slice {
-		panic(fmt.Sprintf("AssertSliceContain called with non-slice value of type %T", slice))
+		t.Fatalf("AssertSliceContain called with non-slice value of type %T", slice)
 	}
 	var contained bool
 	for i := 0; i < sliceVal.Len(); i++ {
@@ -210,7 +214,7 @@ func AssertSliceNotContain(t testing.TB, slice, val interface{}, args ...interfa
 	t.Helper()
 	sliceVal := reflect.ValueOf(slice)
 	if sliceVal.Kind() != reflect.Slice {
-		panic(fmt.Sprintf("AssertSliceNotContain called with non-slice value of type %T", slice))
+		t.Fatalf("AssertSliceNotContain called with non-slice value of type %T", slice)
 	}
 	var contained bool
 	for i := 0; i < sliceVal.Len(); i++ {
@@ -232,11 +236,11 @@ func AssertMapEqual(t testing.TB, expected, got interface{}, args ...interface{}
 	t.Helper()
 	expectedMap := reflect.ValueOf(expected)
 	if expectedMap.Kind() != reflect.Map {
-		panic(fmt.Sprintf("AssertMapEqual called with non-map expected value of type %T", expected))
+		t.Fatalf("AssertMapEqual called with non-map expected value of type %T", expected)
 	}
 	gotMap := reflect.ValueOf(got)
 	if gotMap.Kind() != reflect.Map {
-		panic(fmt.Sprintf("AssertMapEqual called with non-map got value of type %T", got))
+		t.Fatalf("AssertMapEqual called with non-map got value of type %T", got)
 	}
 
 	if a, b := expectedMap.Len(), gotMap.Len(); a != b {
@@ -273,7 +277,7 @@ func AssertMapContain(t testing.TB, m, key, val interface{}, args ...interface{}
 	t.Helper()
 	mapVal := reflect.ValueOf(m)
 	if mapVal.Kind() != reflect.Map {
-		panic(fmt.Sprintf("AssertMapContain called with non-map value of type %T", m))
+		t.Fatalf("AssertMapContain called with non-map value of type %T", m)
 	}
 	elemVal := mapVal.MapIndex(reflect.ValueOf(key))
 	if !elemVal.IsValid() || !reflect.DeepEqual(elemVal.Interface(), val) {
@@ -289,7 +293,7 @@ func AssertMapContainKey(t testing.TB, m, key interface{}, args ...interface{}) 
 	t.Helper()
 	mapVal := reflect.ValueOf(m)
 	if mapVal.Kind() != reflect.Map {
-		panic(fmt.Sprintf("AssertMapContainKey called with non-map value of type %T", m))
+		t.Fatalf("AssertMapContainKey called with non-map value of type %T", m)
 	}
 	elemVal := mapVal.MapIndex(reflect.ValueOf(key))
 	if !elemVal.IsValid() {
@@ -305,7 +309,7 @@ func AssertMapContainVal(t testing.TB, m, val interface{}, args ...interface{}) 
 	t.Helper()
 	mapVal := reflect.ValueOf(m)
 	if mapVal.Kind() != reflect.Map {
-		panic(fmt.Sprintf("AssertMapContainVal called with non-map value of type %T", m))
+		t.Fatalf("AssertMapContainVal called with non-map value of type %T", m)
 	}
 	var contained bool
 	for _, key := range mapVal.MapKeys() {
@@ -328,7 +332,7 @@ func AssertMapNotContain(t testing.TB, m, key, val interface{}, args ...interfac
 	t.Helper()
 	mapVal := reflect.ValueOf(m)
 	if mapVal.Kind() != reflect.Map {
-		panic(fmt.Sprintf("AssertMapNotContain called with non-map value of type %T", m))
+		t.Fatalf("AssertMapNotContain called with non-map value of type %T", m)
 	}
 	elemVal := mapVal.MapIndex(reflect.ValueOf(key))
 	if elemVal.IsValid() && reflect.DeepEqual(elemVal.Interface(), val) {
@@ -344,7 +348,7 @@ func AssertMapNotContainKey(t testing.TB, m, key interface{}, args ...interface{
 	t.Helper()
 	mapVal := reflect.ValueOf(m)
 	if mapVal.Kind() != reflect.Map {
-		panic(fmt.Sprintf("AssertMapNotContainKey called with non-map value of type %T", m))
+		t.Fatalf("AssertMapNotContainKey called with non-map value of type %T", m)
 	}
 	elemVal := mapVal.MapIndex(reflect.ValueOf(key))
 	if elemVal.IsValid() {
@@ -360,7 +364,7 @@ func AssertMapNotContainVal(t testing.TB, m, val interface{}, args ...interface{
 	t.Helper()
 	mapVal := reflect.ValueOf(m)
 	if mapVal.Kind() != reflect.Map {
-		panic(fmt.Sprintf("AssertMapNotContainVal called with non-map value of type %T", m))
+		t.Fatalf("AssertMapNotContainVal called with non-map value of type %T", m)
 	}
 	var contained bool
 	for _, key := range mapVal.MapKeys() {
@@ -501,7 +505,7 @@ func AssertNotPanic(t testing.TB, f func(), args ...interface{}) {
 	}
 }
 
-func AssertImageEqual(t testing.TB, expected, got image.Image, maxDelta int, args ...interface{}) {
+func AssertImageEqual(t testing.TB, expected, got image.Image, maxDelta color.Color, args ...interface{}) {
 	t.Helper()
 
 	if equal, pos := tImageEqual(expected, got, maxDelta); !equal {
@@ -513,24 +517,27 @@ func AssertImageEqual(t testing.TB, expected, got image.Image, maxDelta int, arg
 	}
 }
 
-func tImageEqual(m0, m1 image.Image, maxDelta int) (ok bool, failedPixelPos image.Point) {
+func tImageEqual(m0, m1 image.Image, maxDelta color.Color) (ok bool, failedPixelPos image.Point) {
 	b := m0.Bounds()
+
+	maxDelta_R, maxDelta_G, maxDelta_B, maxDelta_A := maxDelta.RGBA()
+
 	for y := b.Min.Y; y < b.Max.Y; y++ {
 		for x := b.Min.X; x < b.Max.X; x++ {
 			c0 := m0.At(x, y)
 			c1 := m1.At(x, y)
 			r0, g0, b0, a0 := c0.RGBA()
 			r1, g1, b1, a1 := c1.RGBA()
-			if tDeltaInt(int(r0), int(r1)) > maxDelta {
+			if tDeltaUint32(r0, r1) > maxDelta_R {
 				return false, image.Pt(x, y)
 			}
-			if tDeltaInt(int(g0), int(g1)) > maxDelta {
+			if tDeltaUint32(g0, g1) > maxDelta_G {
 				return false, image.Pt(x, y)
 			}
-			if tDeltaInt(int(b0), int(b1)) > maxDelta {
+			if tDeltaUint32(b0, b1) > maxDelta_B {
 				return false, image.Pt(x, y)
 			}
-			if tDeltaInt(int(a0), int(a1)) > maxDelta {
+			if tDeltaUint32(a0, a1) > maxDelta_A {
 				return false, image.Pt(x, y)
 			}
 		}
@@ -538,7 +545,7 @@ func tImageEqual(m0, m1 image.Image, maxDelta int) (ok bool, failedPixelPos imag
 	return true, image.Pt(0, 0)
 }
 
-func tDeltaInt(a, b int) int {
+func tDeltaUint32(a, b uint32) uint32 {
 	if a >= b {
 		return a - b
 	}
