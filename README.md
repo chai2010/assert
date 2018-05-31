@@ -6,7 +6,7 @@
 
 ## Install
 
-1. `go install github.com/chai2010/assert`
+1. `go get -u github.com/chai2010/assert`
 2. `go test`
 
 ## Example
