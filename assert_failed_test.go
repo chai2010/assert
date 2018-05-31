@@ -11,6 +11,7 @@ import (
 	"flag"
 	"fmt"
 	"image"
+	"image/color"
 	"math"
 	"strings"
 	"testing"
@@ -32,6 +33,13 @@ func TestAssert_failed_02(t *testing.T) {
 		t.SkipNow()
 	}
 	Assert(t, 1 == 2, "message1", "message2")
+}
+
+func TestAssertf_failed(t *testing.T) {
+	if !*flagAssertFailedTest {
+		t.SkipNow()
+	}
+	Assertf(t, 1 == 2, "%v:%v", "message1", "message2")
 }
 
 func TestAssertNil_failed(t *testing.T) {
@@ -378,4 +386,17 @@ func TestAssertNotPanic_failed(t *testing.T) {
 		t.SkipNow()
 	}
 	AssertNotPanic(t, func() { panic("TestAssertNotPanic_failed") })
+}
+
+func TestAssertImageEqual_failed(t *testing.T) {
+	if !*flagAssertFailedTest {
+		t.SkipNow()
+	}
+
+	m0 := image.NewGray(image.Rect(0, 0, 10, 10))
+	m1 := image.NewRGBA(image.Rect(0, 0, 10, 10))
+
+	m0.SetGray(5, 6, color.Gray{Y: 10})
+
+	AssertImageEqual(t, m0, m1, color.Gray{Y: 5})
 }
