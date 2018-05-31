@@ -507,19 +507,23 @@ func AssertNotPanic(t testing.TB, f func(), args ...interface{}) {
 
 func AssertImageEqual(t testing.TB, expected, got image.Image, maxDelta color.Color, args ...interface{}) {
 	t.Helper()
-
 	if equal, pos := tImageEqual(expected, got, maxDelta); !equal {
 		if msg := fmt.Sprint(args...); msg != "" {
-			t.Fatalf("AssertImageEqual failed, pos = %v, expected = %v, got = %v, %s", pos, expected, got, msg)
+			t.Fatalf("AssertImageEqual failed, pos = %v, expected = %#v, got = %#v, max = %#v, %s",
+				pos, expected.At(pos.X, pos.Y), got.At(pos.X, pos.Y),
+				maxDelta, msg,
+			)
 		} else {
-			t.Fatalf("AssertImageEqual failed, pos = %v, expected = %v, got = %v", pos, expected, got)
+			t.Fatalf("AssertImageEqual failed, pos = %v, expected = %#v, got = %#v, max = %#v",
+				pos, expected.At(pos.X, pos.Y), got.At(pos.X, pos.Y),
+				maxDelta,
+			)
 		}
 	}
 }
 
 func tImageEqual(m0, m1 image.Image, maxDelta color.Color) (ok bool, failedPixelPos image.Point) {
 	b := m0.Bounds()
-
 	maxDelta_R, maxDelta_G, maxDelta_B, maxDelta_A := maxDelta.RGBA()
 
 	for y := b.Min.Y; y < b.Max.Y; y++ {
