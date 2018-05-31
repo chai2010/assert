@@ -22,7 +22,7 @@ func TestAssert(t *testing.T) {
 }
 
 func TestAssertf(t *testing.T) {
-	Assertf(t, 1 == 1, "%v:v", "message1", "message2")
+	Assertf(t, 1 == 1, "%v:%v", "message1", "message2")
 }
 
 func TestAssertNil(t *testing.T) {
