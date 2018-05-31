@@ -8,6 +8,7 @@ import (
 	"bytes"
 	"fmt"
 	"image"
+	"image/color"
 	"math"
 	"strings"
 	"testing"
@@ -18,6 +19,10 @@ import (
 func TestAssert(t *testing.T) {
 	Assert(t, 1 == 1)
 	Assert(t, 1 == 1, "message1", "message2")
+}
+
+func TestAssertf(t *testing.T) {
+	Assertf(t, 1 == 1, "%v:v", "message1", "message2")
 }
 
 func TestAssertNil(t *testing.T) {
@@ -49,7 +54,6 @@ func TestAssertEqual(t *testing.T) {
 	AssertEqual(t, []string{}, []string(nil))
 	AssertEqual(t, []interface{}{}, []interface{}(nil))
 	AssertEqual(t, append([]interface{}{}, "abc", "123"), []interface{}{"abc", 123})
-
 }
 
 func TestAssertNotEqual(t *testing.T) {
@@ -97,6 +101,18 @@ func TestAssertSliceNotContain(t *testing.T) {
 	AssertSliceNotContain(t, []interface{}{1, 1, 2, 3, 5, "8", 13}, 8)
 }
 
+func TestAssertMapEqual(t *testing.T) {
+	a := make(map[string]string)
+	b := make(map[interface{}]interface{})
+
+	for i := 0; i < 1000; i++ {
+		a[fmt.Sprintf("%d", i)] = fmt.Sprintf("%d", i)
+		b[fmt.Sprintf("%d", i)] = i
+	}
+
+	AssertMapEqual(t, a, b)
+}
+
 func TestAssertMapContain(t *testing.T) {
 	AssertMapContain(t,
 		map[string]int{
@@ -108,18 +124,6 @@ func TestAssertMapContain(t *testing.T) {
 		},
 		"MST", -7*60*60,
 	)
-}
-
-func TestAssertMapEqual(t *testing.T) {
-	a := make(map[string]string)
-	b := make(map[interface{}]interface{})
-
-	for i := 0; i < 1000; i++ {
-		a[fmt.Sprintf("%d", i)] = fmt.Sprintf("%d", i)
-		b[fmt.Sprintf("%d", i)] = i
-	}
-
-	AssertMapEqual(t, a, b)
 }
 
 func TestAssertMapContainKey(t *testing.T) {
@@ -229,6 +233,11 @@ func TestAssertNotPanic(t *testing.T) {
 	AssertNotPanic(t, func() {})
 }
 
-func TestAssertEQ(t *testing.T) {
+func TestAssertImageEqual(t *testing.T) {
+	m0 := image.NewGray(image.Rect(0, 0, 10, 10))
+	m1 := image.NewRGBA(image.Rect(0, 0, 10, 10))
 
+	m0.SetGray(0, 0, color.Gray{Y: 10})
+
+	AssertImageEqual(t, m0, m1, color.Gray{Y: 20})
 }
