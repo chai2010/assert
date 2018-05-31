@@ -27,7 +27,7 @@ func Assert(t testing.TB, condition bool, args ...interface{}) {
 	}
 }
 
-func Assertf(t *testing.T, condition bool, format string, a ...interface{}) {
+func Assertf(t testing.TB, condition bool, format string, a ...interface{}) {
 	t.Helper()
 	if !condition {
 		if msg := fmt.Sprintf(format, a...); msg != "" {
