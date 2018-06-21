@@ -1,4 +1,4 @@
-# Assert for Go1.9+ testing
+# Assert for Go testing
 
 [![Build Status](https://travis-ci.org/chai2010/assert.svg)](https://travis-ci.org/chai2010/assert)
 [![Go Report Card](https://goreportcard.com/badge/github.com/chai2010/assert)](https://goreportcard.com/report/github.com/chai2010/assert)

@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-// +build go1.9
-
 /*
 Package assert provides assert helper functions for testing package.
 
@@ -45,8 +43,14 @@ import (
 	"testing"
 )
 
+type testing_TBHelper interface {
+	Helper()
+}
+
 func Assert(tb testing.TB, condition bool, args ...interface{}) {
-	tb.Helper()
+	if x, ok := tb.(testing_TBHelper); ok {
+		x.Helper()
+	}
 	if !condition {
 		if msg := fmt.Sprint(args...); msg != "" {
 			tb.Fatalf("Assert failed, %s", msg)
@@ -57,7 +61,9 @@ func Assert(tb testing.TB, condition bool, args ...interface{}) {
 }
 
 func Assertf(tb testing.TB, condition bool, format string, a ...interface{}) {
-	tb.Helper()
+	if x, ok := tb.(testing_TBHelper); ok {
+		x.Helper()
+	}
 	if !condition {
 		if msg := fmt.Sprintf(format, a...); msg != "" {
 			tb.Fatalf("tAssert failed, %s", msg)
@@ -68,7 +74,9 @@ func Assertf(tb testing.TB, condition bool, format string, a ...interface{}) {
 }
 
 func AssertNil(tb testing.TB, p interface{}, args ...interface{}) {
-	tb.Helper()
+	if x, ok := tb.(testing_TBHelper); ok {
+		x.Helper()
+	}
 	if p != nil {
 		if msg := fmt.Sprint(args...); msg != "" {
 			if err, ok := p.(error); ok && err != nil {
@@ -87,7 +95,9 @@ func AssertNil(tb testing.TB, p interface{}, args ...interface{}) {
 }
 
 func AssertNotNil(tb testing.TB, p interface{}, args ...interface{}) {
-	tb.Helper()
+	if x, ok := tb.(testing_TBHelper); ok {
+		x.Helper()
+	}
 	if p == nil {
 		if msg := fmt.Sprint(args...); msg != "" {
 			tb.Fatalf("AssertNotNil failed, %s", msg)
@@ -98,7 +108,9 @@ func AssertNotNil(tb testing.TB, p interface{}, args ...interface{}) {
 }
 
 func AssertTrue(tb testing.TB, condition bool, args ...interface{}) {
-	tb.Helper()
+	if x, ok := tb.(testing_TBHelper); ok {
+		x.Helper()
+	}
 	if condition != true {
 		if msg := fmt.Sprint(args...); msg != "" {
 			tb.Fatalf("AssertTrue failed, %s", msg)
@@ -109,7 +121,9 @@ func AssertTrue(tb testing.TB, condition bool, args ...interface{}) {
 }
 
 func AssertFalse(tb testing.TB, condition bool, args ...interface{}) {
-	tb.Helper()
+	if x, ok := tb.(testing_TBHelper); ok {
+		x.Helper()
+	}
 	if condition != false {
 		if msg := fmt.Sprint(args...); msg != "" {
 			tb.Fatalf("AssertFalse failed, %s", msg)
@@ -120,7 +134,9 @@ func AssertFalse(tb testing.TB, condition bool, args ...interface{}) {
 }
 
 func AssertEqual(tb testing.TB, expected, got interface{}, args ...interface{}) {
-	tb.Helper()
+	if x, ok := tb.(testing_TBHelper); ok {
+		x.Helper()
+	}
 	// reflect.DeepEqual is failed for `int == int64?`
 	if fmt.Sprintf("%v", expected) != fmt.Sprintf("%v", got) {
 		if msg := fmt.Sprint(args...); msg != "" {
@@ -132,7 +148,9 @@ func AssertEqual(tb testing.TB, expected, got interface{}, args ...interface{}) 
 }
 
 func AssertNotEqual(tb testing.TB, expected, got interface{}, args ...interface{}) {
-	tb.Helper()
+	if x, ok := tb.(testing_TBHelper); ok {
+		x.Helper()
+	}
 
 	// reflect.DeepEqual is failed for `int == int64?`
 	if fmt.Sprintf("%v", expected) == fmt.Sprintf("%v", got) {
@@ -145,7 +163,9 @@ func AssertNotEqual(tb testing.TB, expected, got interface{}, args ...interface{
 }
 
 func AssertNear(tb testing.TB, expected, got, abs float64, args ...interface{}) {
-	tb.Helper()
+	if x, ok := tb.(testing_TBHelper); ok {
+		x.Helper()
+	}
 	if math.Abs(expected-got) > abs {
 		if msg := fmt.Sprint(args...); msg != "" {
 			tb.Fatalf("AssertNear failed, expected = %v, got = %v, abs = %v, %s", expected, got, abs, msg)
@@ -156,7 +176,9 @@ func AssertNear(tb testing.TB, expected, got, abs float64, args ...interface{}) 
 }
 
 func AssertBetween(tb testing.TB, min, max, val float64, args ...interface{}) {
-	tb.Helper()
+	if x, ok := tb.(testing_TBHelper); ok {
+		x.Helper()
+	}
 	if val < min || max < val {
 		if msg := fmt.Sprint(args...); msg != "" {
 			tb.Fatalf("AssertBetween failed, min = %v, max = %v, val = %v, %s", min, max, val, msg)
@@ -167,7 +189,9 @@ func AssertBetween(tb testing.TB, min, max, val float64, args ...interface{}) {
 }
 
 func AssertNotBetween(tb testing.TB, min, max, val float64, args ...interface{}) {
-	tb.Helper()
+	if x, ok := tb.(testing_TBHelper); ok {
+		x.Helper()
+	}
 	if min <= val && val <= max {
 		if msg := fmt.Sprint(args...); msg != "" {
 			tb.Fatalf("AssertNotBetween failed, min = %v, max = %v, val = %v, %s", min, max, val, msg)
@@ -178,7 +202,9 @@ func AssertNotBetween(tb testing.TB, min, max, val float64, args ...interface{})
 }
 
 func AssertMatch(tb testing.TB, expectedPattern string, got []byte, args ...interface{}) {
-	tb.Helper()
+	if x, ok := tb.(testing_TBHelper); ok {
+		x.Helper()
+	}
 	if matched, err := regexp.Match(expectedPattern, got); err != nil || !matched {
 		if err != nil {
 			if msg := fmt.Sprint(args...); msg != "" {
@@ -197,7 +223,9 @@ func AssertMatch(tb testing.TB, expectedPattern string, got []byte, args ...inte
 }
 
 func AssertMatchString(tb testing.TB, expectedPattern, got string, args ...interface{}) {
-	tb.Helper()
+	if x, ok := tb.(testing_TBHelper); ok {
+		x.Helper()
+	}
 	if matched, err := regexp.MatchString(expectedPattern, got); err != nil || !matched {
 		if err != nil {
 			if msg := fmt.Sprint(args...); msg != "" {
@@ -216,7 +244,9 @@ func AssertMatchString(tb testing.TB, expectedPattern, got string, args ...inter
 }
 
 func AssertSliceContain(tb testing.TB, slice, val interface{}, args ...interface{}) {
-	tb.Helper()
+	if x, ok := tb.(testing_TBHelper); ok {
+		x.Helper()
+	}
 	sliceVal := reflect.ValueOf(slice)
 	if sliceVal.Kind() != reflect.Slice {
 		tb.Fatalf("AssertSliceContain called with non-slice value of type %T", slice)
@@ -238,7 +268,9 @@ func AssertSliceContain(tb testing.TB, slice, val interface{}, args ...interface
 }
 
 func AssertSliceNotContain(tb testing.TB, slice, val interface{}, args ...interface{}) {
-	tb.Helper()
+	if x, ok := tb.(testing_TBHelper); ok {
+		x.Helper()
+	}
 	sliceVal := reflect.ValueOf(slice)
 	if sliceVal.Kind() != reflect.Slice {
 		tb.Fatalf("AssertSliceNotContain called with non-slice value of type %T", slice)
@@ -260,7 +292,9 @@ func AssertSliceNotContain(tb testing.TB, slice, val interface{}, args ...interf
 }
 
 func AssertMapEqual(tb testing.TB, expected, got interface{}, args ...interface{}) {
-	tb.Helper()
+	if x, ok := tb.(testing_TBHelper); ok {
+		x.Helper()
+	}
 	expectedMap := reflect.ValueOf(expected)
 	if expectedMap.Kind() != reflect.Map {
 		tb.Fatalf("AssertMapEqual called with non-map expected value of type %T", expected)
@@ -301,7 +335,9 @@ func AssertMapEqual(tb testing.TB, expected, got interface{}, args ...interface{
 }
 
 func AssertMapContain(tb testing.TB, m, key, val interface{}, args ...interface{}) {
-	tb.Helper()
+	if x, ok := tb.(testing_TBHelper); ok {
+		x.Helper()
+	}
 	mapVal := reflect.ValueOf(m)
 	if mapVal.Kind() != reflect.Map {
 		tb.Fatalf("AssertMapContain called with non-map value of type %T", m)
@@ -317,7 +353,9 @@ func AssertMapContain(tb testing.TB, m, key, val interface{}, args ...interface{
 }
 
 func AssertMapContainKey(tb testing.TB, m, key interface{}, args ...interface{}) {
-	tb.Helper()
+	if x, ok := tb.(testing_TBHelper); ok {
+		x.Helper()
+	}
 	mapVal := reflect.ValueOf(m)
 	if mapVal.Kind() != reflect.Map {
 		tb.Fatalf("AssertMapContainKey called with non-map value of type %T", m)
@@ -333,7 +371,9 @@ func AssertMapContainKey(tb testing.TB, m, key interface{}, args ...interface{})
 }
 
 func AssertMapContainVal(tb testing.TB, m, val interface{}, args ...interface{}) {
-	tb.Helper()
+	if x, ok := tb.(testing_TBHelper); ok {
+		x.Helper()
+	}
 	mapVal := reflect.ValueOf(m)
 	if mapVal.Kind() != reflect.Map {
 		tb.Fatalf("AssertMapContainVal called with non-map value of type %T", m)
@@ -356,7 +396,9 @@ func AssertMapContainVal(tb testing.TB, m, val interface{}, args ...interface{})
 }
 
 func AssertMapNotContain(tb testing.TB, m, key, val interface{}, args ...interface{}) {
-	tb.Helper()
+	if x, ok := tb.(testing_TBHelper); ok {
+		x.Helper()
+	}
 	mapVal := reflect.ValueOf(m)
 	if mapVal.Kind() != reflect.Map {
 		tb.Fatalf("AssertMapNotContain called with non-map value of type %T", m)
@@ -372,7 +414,9 @@ func AssertMapNotContain(tb testing.TB, m, key, val interface{}, args ...interfa
 }
 
 func AssertMapNotContainKey(tb testing.TB, m, key interface{}, args ...interface{}) {
-	tb.Helper()
+	if x, ok := tb.(testing_TBHelper); ok {
+		x.Helper()
+	}
 	mapVal := reflect.ValueOf(m)
 	if mapVal.Kind() != reflect.Map {
 		tb.Fatalf("AssertMapNotContainKey called with non-map value of type %T", m)
@@ -388,7 +432,9 @@ func AssertMapNotContainKey(tb testing.TB, m, key interface{}, args ...interface
 }
 
 func AssertMapNotContainVal(tb testing.TB, m, val interface{}, args ...interface{}) {
-	tb.Helper()
+	if x, ok := tb.(testing_TBHelper); ok {
+		x.Helper()
+	}
 	mapVal := reflect.ValueOf(m)
 	if mapVal.Kind() != reflect.Map {
 		tb.Fatalf("AssertMapNotContainVal called with non-map value of type %T", m)
@@ -411,7 +457,9 @@ func AssertMapNotContainVal(tb testing.TB, m, val interface{}, args ...interface
 }
 
 func AssertZero(tb testing.TB, val interface{}, args ...interface{}) {
-	tb.Helper()
+	if x, ok := tb.(testing_TBHelper); ok {
+		x.Helper()
+	}
 	if !reflect.DeepEqual(reflect.Zero(reflect.TypeOf(val)).Interface(), val) {
 		if msg := fmt.Sprint(args...); msg != "" {
 			tb.Fatalf("AssertZero failed, val = %v, %s", val, msg)
@@ -422,7 +470,9 @@ func AssertZero(tb testing.TB, val interface{}, args ...interface{}) {
 }
 
 func AssertNotZero(tb testing.TB, val interface{}, args ...interface{}) {
-	tb.Helper()
+	if x, ok := tb.(testing_TBHelper); ok {
+		x.Helper()
+	}
 	if reflect.DeepEqual(reflect.Zero(reflect.TypeOf(val)).Interface(), val) {
 		if msg := fmt.Sprint(args...); msg != "" {
 			tb.Fatalf("AssertNotZero failed, val = %v, %s", val, msg)
@@ -433,7 +483,9 @@ func AssertNotZero(tb testing.TB, val interface{}, args ...interface{}) {
 }
 
 func AssertFileExists(tb testing.TB, path string, args ...interface{}) {
-	tb.Helper()
+	if x, ok := tb.(testing_TBHelper); ok {
+		x.Helper()
+	}
 	if _, err := os.Stat(path); err != nil {
 		if msg := fmt.Sprint(args...); msg != "" {
 			if err != nil {
@@ -452,7 +504,9 @@ func AssertFileExists(tb testing.TB, path string, args ...interface{}) {
 }
 
 func AssertFileNotExists(tb testing.TB, path string, args ...interface{}) {
-	tb.Helper()
+	if x, ok := tb.(testing_TBHelper); ok {
+		x.Helper()
+	}
 	if _, err := os.Stat(path); !os.IsNotExist(err) {
 		if msg := fmt.Sprint(args...); msg != "" {
 			if err != nil {
@@ -471,7 +525,9 @@ func AssertFileNotExists(tb testing.TB, path string, args ...interface{}) {
 }
 
 func AssertImplements(tb testing.TB, interfaceObj, obj interface{}, args ...interface{}) {
-	tb.Helper()
+	if x, ok := tb.(testing_TBHelper); ok {
+		x.Helper()
+	}
 	if !reflect.TypeOf(obj).Implements(reflect.TypeOf(interfaceObj).Elem()) {
 		if msg := fmt.Sprint(args...); msg != "" {
 			tb.Fatalf("AssertImplements failed, interface = %T, obj = %T, %s", interfaceObj, obj, msg)
@@ -482,7 +538,9 @@ func AssertImplements(tb testing.TB, interfaceObj, obj interface{}, args ...inte
 }
 
 func AssertSameType(tb testing.TB, expectedType interface{}, obj interface{}, args ...interface{}) {
-	tb.Helper()
+	if x, ok := tb.(testing_TBHelper); ok {
+		x.Helper()
+	}
 	if !reflect.DeepEqual(reflect.TypeOf(obj), reflect.TypeOf(expectedType)) {
 		if msg := fmt.Sprint(args...); msg != "" {
 			tb.Fatalf("AssertSameType failed, expected = %T, obj = %T, %s", expectedType, obj, msg)
@@ -493,7 +551,9 @@ func AssertSameType(tb testing.TB, expectedType interface{}, obj interface{}, ar
 }
 
 func AssertPanic(tb testing.TB, f func(), args ...interface{}) {
-	tb.Helper()
+	if x, ok := tb.(testing_TBHelper); ok {
+		x.Helper()
+	}
 
 	panicVal := func() (panicVal interface{}) {
 		defer func() {
@@ -513,7 +573,9 @@ func AssertPanic(tb testing.TB, f func(), args ...interface{}) {
 }
 
 func AssertNotPanic(tb testing.TB, f func(), args ...interface{}) {
-	tb.Helper()
+	if x, ok := tb.(testing_TBHelper); ok {
+		x.Helper()
+	}
 
 	panicVal := func() (panicVal interface{}) {
 		defer func() {
@@ -533,7 +595,9 @@ func AssertNotPanic(tb testing.TB, f func(), args ...interface{}) {
 }
 
 func AssertImageEqual(tb testing.TB, expected, got image.Image, maxDelta color.Color, args ...interface{}) {
-	tb.Helper()
+	if x, ok := tb.(testing_TBHelper); ok {
+		x.Helper()
+	}
 	if equal, pos := tImageEqual(expected, got, maxDelta); !equal {
 		if msg := fmt.Sprint(args...); msg != "" {
 			tb.Fatalf("AssertImageEqual failed, pos = %v, expected = %#v, got = %#v, max = %#v, %s",
